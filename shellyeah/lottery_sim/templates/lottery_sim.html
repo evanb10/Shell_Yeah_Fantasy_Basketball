@@ -1,0 +1,36 @@
+{% extends "master.html" %}
+{% load static %}
+{% block title %}Players List{% endblock %}
+{% block body_style%}background: #1AAD86{% endblock %}
+
+{% block content %}
+
+<div class="container">
+<h1> {{ name }} {{ year }} Fantasy {{ sport.upper }} Lottery Draft Simulator</h1>
+  <div class="row justify-content-center">
+    <div class="col">
+      <form method="post">
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="row mb-3">
+          <label for="{{ field.id_for_label }}" class="col-sm-3 col-form-label text-end">{{ field.label }}</label>
+          <div class="col-sm-2 col-md-2 col-lg-1 d-flex align-items-center">
+            {{ field }}
+          </div>
+        </div>
+        <div class="row mb-3">
+          </div>
+          {% endfor %}
+        <div class="row">
+          <div class="col d-flex justify-content-center">
+            <button type="submit" class="btn btn-primary">Submit</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+
+{% endblock %}
