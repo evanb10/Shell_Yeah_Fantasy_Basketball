@@ -8,10 +8,12 @@ import sys
 class League():
 
     class Manager():
-        def __init__(self, user_id, team_name, display_name) -> None:
+        def __init__(self, user_id, team_name, display_name, wins, losses) -> None:
             self.user_id = user_id
             self.team_name = team_name
             self.display_name = display_name
+            self.wins = wins
+            self.losses = losses
 
         def __repr__(self) -> str:
             return self.__str__()
@@ -120,7 +122,7 @@ class League():
             json_response = response.json()
 
             for manager in json_response:
-                man = self.Manager(manager['user_id'], manager['metadata']['team_name'] if 'team_name' in manager['metadata'] else None, manager['display_name'])
+                man = self.Manager(manager['user_id'], manager['metadata']['team_name'] if 'team_name' in manager['metadata'] else None, manager['display_name'], manager['metadata']['wins'] if 'wins' in manager['metadata'] else 0, manager['metadata']['wins'] if 'wins' in manager['metadata'] else 0)
                 print(man)
                 #print(manager)
                 self.managers.append(man)
@@ -167,43 +169,43 @@ class League():
             league_name = json_response['name']
             previous_league_id = json_response['previous_league_id']
             year = json_response['season']
-            self.db_cursor.execute('insert into fantasy_basketball_league (league_id, num_of_teams, sport, league_name, previous_league_id, year) values (?,?,?,?,?,?)',[league_id, num_rosters, sport, league_name, previous_league_id, year])
+            self.db_cursor.execute('insert into lottery_sim_league (league_id, num_of_teams, sport, league_name, previous_league_id, year) values (?,?,?,?,?,?)',[league_id, num_rosters, sport, league_name, previous_league_id, year])
             self.connection.commit()
 
     def save_roster_to_database(self, owner_id, roster, points_for, points_against):
         print('SAVING')
         for player in roster:
-            self.db_cursor.execute('insert into fantasy_basketball_roster (manager_id, player_id) values (?,?)',[owner_id, player])
-            self.db_cursor.execute('UPDATE fantasy_basketball_manager SET points_for = ?, points_against = ? WHERE manager_id = ?', [points_for, points_against, owner_id])
+            self.db_cursor.execute('insert into lottery_sim_roster (manager_id, player_id) values (?,?)',[owner_id, player])
+            self.db_cursor.execute('UPDATE lottery_sim_manager SET points_for = ?, points_against = ? WHERE manager_id = ?', [points_for, points_against, owner_id])
 
         self.connection.commit()
 
     def clear_roster_table(self):
-        self.db_cursor.execute('delete from fantasy_basketball_roster')
+        self.db_cursor.execute('delete from lottery_sim_roster')
         self.connection.commit()
 
     def save_players_to_database(self):
         print('SAVING')
         for player in league.players:
-            self.db_cursor.execute('insert into fantasy_basketball_player (firstname,lastname,age,team,player_id) values (?,?,?,?,?)',[player.firstname,player.lastname,player.age,player.team,player.id])
+            self.db_cursor.execute('insert into lottery_sim_player (firstname,lastname,age,team,player_id) values (?,?,?,?,?)',[player.firstname,player.lastname,player.age,player.team,player.id])
         self.connection.commit()
 
     def clear_players_table(self):
-        self.db_cursor.execute('delete from fantasy_basketball_player')
+        self.db_cursor.execute('delete from lottery_sim_player')
         self.connection.commit()
 
     def save_managers_to_database(self):
         print('SAVING')
         for manager in league.managers:
-            self.db_cursor.execute('insert into fantasy_basketball_manager(manager_id,team_name,display_name,league_id) values (?,?,?,?)',[manager.user_id, manager.team_name, manager.display_name, league.LEAGUE_ID])
+            self.db_cursor.execute('insert into lottery_sim_manager(manager_id,team_name,display_name,league_id, wins, losses, points_for, points_against) values (?,?,?,?,?,?,?,?)',[manager.user_id, manager.team_name, manager.display_name, league.LEAGUE_ID, manager.wins, manager.losses, 0, 0])
         self.connection.commit()
 
     def clear_managers_table(self):
-        self.db_cursor.execute('delete from fantasy_basketball_manager')
+        self.db_cursor.execute('delete from lottery_sim_manager')
         self.connection.commit()
 
     def save_league_to_database(self):
-        self.db_cursor.execute('insert into fantasy_basketball_league')
+        self.db_cursor.execute('insert into lottery_sim_league')
 
 
 # Main Section

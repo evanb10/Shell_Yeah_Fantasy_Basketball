@@ -224,7 +224,7 @@ class League:
         return team.losses
 
     # def get_league_name(self, league_id):
-    #     return self.db_cursor.execute('select league_name from fantasy_basketball_league where league_id == (?)', [league_id])
+    #     return self.db_cursor.execute('select league_name from lottery_sim_league where league_id == (?)', [league_id])
     #     # self.connection.commit()
         
 class Team:
