@@ -125,3 +125,9 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Setting email backend. Emails can be found at mailtrap.io
+EMAIL_HOST = 'sandbox.smtp.mailtrap.io'
+EMAIL_HOST_USER = 'f79080d08db4fe'
+EMAIL_HOST_PASSWORD = '5e9a22ad67361f'
+EMAIL_PORT = '2525'
