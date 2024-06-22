@@ -4,6 +4,8 @@ from django.urls import reverse
 from .models import Player, Roster, Manager, League
 from .forms import players_form, league_id_form, odds_form, contact_form
 from .scripts.lottery import League as script_league, Team as script_team
+from .scripts.sleeper import League as sleeper_league
+
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 
@@ -101,6 +103,15 @@ def league_id(request):
         if id_form.is_valid():
             # Get league id
             league_id = request.POST['league_id']
+            
+            sleeper = sleeper_league()
+            #Update managers
+            sleeper.get_managers()
+            sleeper.clear_managers_table()
+            sleeper.save_managers_to_database()
+
+            #Update rosters
+            sleeper.get_rosters()
             return redirect(reverse('get_odds', kwargs={'league_id': league_id}))
 
             # Pull all information about a league given the provided league ID

@@ -19,7 +19,8 @@ class League():
             return self.__str__()
 
         def __str__(self) -> str:
-            return self.user_id+ ' : ' + self.display_name
+            # + '\nTeam_name: ' + self.team_name 
+            return 'User_id: ' + str(self.user_id) + '\tDisplay_name: ' + self.display_name + '\n' #+ '\nWins: ' + str(self.wins) + '\nLosses' + str(self.losses)
 
     class Player():
         def __init__(self,firstname,lastname, age, team, id):
@@ -37,7 +38,7 @@ class League():
 
     def __init__(self):
         self.LEAGUE_ID = 1083085818937298944
-        self.connection = sqlite3.connect('../../db.sqlite3')
+        self.connection = sqlite3.connect('db.sqlite3')
         self.db_cursor = self.connection.cursor()
         self.players = []
         self.managers = []
@@ -122,15 +123,27 @@ class League():
             json_response = response.json()
 
             for manager in json_response:
+                # print('\n'*2)
+
+                # print(f'user id: {manager["user_id"]}')
+                # print(f'team_name: {manager["metadata"]["team_name"]}')
+                # print(f'display_name: {manager["display_name"]}')
                 man = self.Manager(manager['user_id'], manager['metadata']['team_name'] if 'team_name' in manager['metadata'] else None, manager['display_name'], manager['metadata']['wins'] if 'wins' in manager['metadata'] else 0, manager['metadata']['wins'] if 'wins' in manager['metadata'] else 0)
-                print(man)
                 #print(manager)
+                # print(manager)
+                # print(man)
+                # print('\n'*2)
                 self.managers.append(man)
 #                manager_arr = [user['user_id'], user['display_name']]
 #                print(manager_arr)
 #                if 'team_name' in manager['metadata']:
 #                    manager_arr.append(user['metadata']['team_name'])
 #                managers.append(user_arr)
+            print('*'*50)
+            print(self.managers)
+            print('*'*50)
+
+            
         else:
             # The API call failed
             print('API call failed with status code {}'.format(response.status_code))
@@ -195,10 +208,14 @@ class League():
         self.connection.commit()
 
     def save_managers_to_database(self):
-        print('SAVING')
-        for manager in league.managers:
+        print('SAVING MANAGERS')
+        print('*'*50)
+        for manager in self.managers:
+            print(manager)
             self.db_cursor.execute('insert into lottery_sim_manager(manager_id,team_name,display_name,league_id, wins, losses, points_for, points_against) values (?,?,?,?,?,?,?,?)',[manager.user_id, manager.team_name, manager.display_name, league.LEAGUE_ID, manager.wins, manager.losses, 0, 0])
+        print('*'*50)
         self.connection.commit()
+        print('DONE SAVING MANAGERS')
 
     def clear_managers_table(self):
         self.db_cursor.execute('delete from lottery_sim_manager')
