@@ -202,8 +202,6 @@ def lottery_results(request, league_id):
     teams = request.GET.get('cleaned_data')
     teams_str = teams.replace("'", '"')  # Replace single quotes with double quotes
     teams_dict = json.loads(teams_str)
-    # managers = Manager.objects.filter(league_id=league_id)
-    # print(managers)
     league = League()
     for manager, odd in teams_dict.items():
         manager_name = manager[len('percentage_'):]
@@ -218,37 +216,16 @@ def lottery_results(request, league_id):
         new_team = Team(manager, odds, wins, losses, points_for, points_against)
         league.addTeam(new_team)
         
-    # wins_dict = league.findTiedTeams()
-    # print('*'*25)
-    # print(league.teams)
-    # print('*'*25)
-
     league.sort_teams()
-    # print(league.teams)
-    print('*'*25)
 
     league.setRanks()
-    # league.setOdds()
     league.splitOdds()
-    #  print(league)
     league.oddsCheck()
     league.splitCombinations()
-    # league.combinationCheck()
     league.teams.sort(key = lambda x: x.rank,reverse=True)
     league.findWinningTeam()
 
-    print(league.lottery_results)
     context = {'results': league.lottery_results}
-    # print('The remaining picks are ordered in reverse of season records. These are the results:\n')
-
-    # pick = 4
-    # for team in league.teams:
-    #     if team.selected == True:
-    #         continue
-    #     else:
-    #         print(f'Pick {pick}: {team.name}')
-    #         pick += 1
-    #     time.sleep(1)
     return render(request, 'lottery_sim_results.html', context)
 
 def contact(request):
