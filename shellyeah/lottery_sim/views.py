@@ -1,13 +1,16 @@
 from django.http import HttpResponseBadRequest
 from django.shortcuts import render, redirect
 from django.urls import reverse
-from .models import Player, Roster, Manager, League
+from .models import Player, Roster, Manager, League, LeagueMembership
 from .forms import players_form, league_id_form, odds_form, contact_form
 from .scripts.lottery import League as script_league, Team as script_team
 from .scripts.sleeper import League as sleeper_league
 
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
+from django.db.models import Subquery
+
+
 
 
 # Create your views here.
@@ -151,7 +154,12 @@ def get_odds(request,league_id):
     league_query = League.objects.filter(league_id=league_id).values().first()
     if league_query:
         # Prepare context data
-        teams = Manager.objects.filter(league_id=league_id)
+        memebership_query = LeagueMembership.objects.filter(league_id=league_id).values_list('manager_id',flat=True)
+        print(memebership_query)
+        teams = Manager.objects.filter(manager_id__in=Subquery(memebership_query))
+        print(teams)
+
+        # teams = Manager.objects.filter(league_id=league_id)
         league_ = script_league()
         for manager in teams:
             manager_name = manager.display_name
