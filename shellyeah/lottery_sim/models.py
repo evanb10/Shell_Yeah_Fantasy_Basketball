@@ -17,7 +17,6 @@ class Manager(models.Model):
   team_name = models.CharField(max_length=255,null=True)
   display_name = models.CharField(max_length=255)
   record = models.CharField(max_length=255,null=True)
-  league_id = models.ForeignKey("League",on_delete=models.CASCADE,db_column='league_id')
   wins = models.IntegerField(null=False,default=0)
   losses = models.IntegerField(null=False,default=0)
   points_for = models.IntegerField(null=False, default=0)
@@ -42,5 +41,16 @@ class League(models.Model):
    league_name = models.CharField(max_length=255)
    previous_league_id = models.BigIntegerField()
    year = models.IntegerField()
+
+class LeagueMembership(models.Model):
+  """
+  This model represents a membership of a Manager in a League.
+  """
+  manager = models.ForeignKey(Manager, on_delete=models.CASCADE)
+  league = models.ForeignKey(League, on_delete=models.CASCADE)
+  # You can add additional fields specific to memberships here (e.g., joined_date, role)
+
+  class Meta:
+    unique_together = (('manager', 'league'),)  # Enforces unique manager-league combination
 
 

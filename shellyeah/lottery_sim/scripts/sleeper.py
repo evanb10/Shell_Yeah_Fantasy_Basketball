@@ -2,6 +2,7 @@ import json
 import sqlite3
 import requests
 import sys
+import argparse
 
 
 
@@ -36,8 +37,8 @@ class League():
         def __str__(self) -> str:
             return self.firstname + ' ' + self.lastname
 
-    def __init__(self):
-        self.LEAGUE_ID = 1083085818937298944
+    def __init__(self, league_id):
+        self.LEAGUE_ID = league_id
         self.connection = sqlite3.connect('db.sqlite3')
         self.db_cursor = self.connection.cursor()
         self.players = []
@@ -131,7 +132,6 @@ class League():
                 man = self.Manager(manager['user_id'], manager['metadata']['team_name'] if 'team_name' in manager['metadata'] else None, manager['display_name'], manager['metadata']['wins'] if 'wins' in manager['metadata'] else 0, manager['metadata']['wins'] if 'wins' in manager['metadata'] else 0)
                 #print(manager)
                 # print(manager)
-                # print(man)
                 # print('\n'*2)
                 self.managers.append(man)
 #                manager_arr = [user['user_id'], user['display_name']]
@@ -170,20 +170,42 @@ class League():
             print('API call failed with status code {}'.format(response.status_code))
 
     def get_league_api(self):
+        # Fetch league data from API
         response = requests.get(f'https://api.sleeper.app/v1/league/{self.LEAGUE_ID}')
-        # Check if the API call was successful
+
+        # Check for successful response
         if response.status_code == 200:
-            # The API call was successful
-            # Get the JSON response
             json_response = response.json()
+
+            # Extract league information
             num_rosters = json_response['total_rosters']
             league_id = json_response['league_id']
             sport = json_response['sport']
             league_name = json_response['name']
             previous_league_id = json_response['previous_league_id']
             year = json_response['season']
-            self.db_cursor.execute('insert into lottery_sim_league (league_id, num_of_teams, sport, league_name, previous_league_id, year) values (?,?,?,?,?,?)',[league_id, num_rosters, sport, league_name, previous_league_id, year])
+
+            # Check if league already exists (using SELECT statement)
+            exists_stmt = "SELECT 1 FROM lottery_sim_league WHERE league_id=?"
+            self.db_cursor.execute(exists_stmt, (league_id,))
+
+            # Check if any results exist (league exists if results exist)
+            exists = self.db_cursor.fetchone() is not None
+
+            if exists:
+                # Update existing league
+                update_stmt = """
+                    UPDATE lottery_sim_league
+                    SET num_of_teams=?, sport=?, league_name=?, previous_league_id=?, year=?
+                    WHERE league_id=?
+                """
+                self.db_cursor.execute(update_stmt, (num_rosters, sport, league_name, previous_league_id, year, league_id))
+            else:
+                # Insert new league
+                self.db_cursor.execute('insert into lottery_sim_league (league_id, num_of_teams, sport, league_name, previous_league_id, year) values (?,?,?,?,?,?)',
+                                        [league_id, num_rosters, sport, league_name, previous_league_id, year])
             self.connection.commit()
+
 
     def save_roster_to_database(self, owner_id, roster, points_for, points_against):
         print('SAVING')
@@ -199,7 +221,7 @@ class League():
 
     def save_players_to_database(self):
         print('SAVING')
-        for player in league.players:
+        for player in self.players:
             self.db_cursor.execute('insert into lottery_sim_player (firstname,lastname,age,team,player_id) values (?,?,?,?,?)',[player.firstname,player.lastname,player.age,player.team,player.id])
         self.connection.commit()
 
@@ -208,14 +230,27 @@ class League():
         self.connection.commit()
 
     def save_managers_to_database(self):
-        print('SAVING MANAGERS')
-        print('*'*50)
         for manager in self.managers:
-            print(manager)
-            self.db_cursor.execute('insert into lottery_sim_manager(manager_id,team_name,display_name,league_id, wins, losses, points_for, points_against) values (?,?,?,?,?,?,?,?)',[manager.user_id, manager.team_name, manager.display_name, league.LEAGUE_ID, manager.wins, manager.losses, 0, 0])
-        print('*'*50)
+            # Check if manager exists using a SELECT statement
+            exists_stmt = "SELECT 1 FROM lottery_sim_manager WHERE manager_id=? AND league_id=?"
+            self.db_cursor.execute(exists_stmt, (manager.user_id, self.LEAGUE_ID))
+
+            # Fetch results (should be empty or single row)
+            exists = self.db_cursor.fetchone() is not None
+
+            if exists:
+                # Update existing manager
+                update_stmt = """
+                    UPDATE lottery_sim_manager
+                    SET team_name=?, display_name=?, wins=?, losses=?, points_for=?, points_against=?
+                    WHERE manager_id=?
+                """
+                self.db_cursor.execute(update_stmt, (manager.team_name, manager.display_name, manager.wins, manager.losses, 0, 0, manager.user_id))
+            else:
+                # Insert new manager (unchanged from your original code)
+                self.db_cursor.execute('insert into lottery_sim_manager(manager_id,team_name,display_name,league_id, wins, losses, points_for, points_against) values (?,?,?,?,?,?,?,?)',
+                                        [manager.user_id, manager.team_name, manager.display_name, self.LEAGUE_ID, manager.wins, manager.losses, 0, 0])
         self.connection.commit()
-        print('DONE SAVING MANAGERS')
 
     def clear_managers_table(self):
         self.db_cursor.execute('delete from lottery_sim_manager')
@@ -226,47 +261,57 @@ class League():
 
 
 # Main Section
-opts = sys.argv
-league = League()
+#opts = sys.argv
+# if __name__ == "__main__":
+#     parser = argparse.ArgumentParser(description="Parse command line arguments for sleeper.py")
+#     parser.add_argument("--update_players", dest='update_players', type=str, help="Used to update players in the database")
+#     parser.add_argument("--update_man", dest='update_man', type=str, help="")
+#     parser.add_argument("--update_rosters", dest='update_rosters', type=str, help="Used to update rosters in the database")
+#     parser.add_argument("--update_league", dest='update_league', type=str, help="Used to update the league info in the database")
+#     parser.add_argument("--update_all", dest='update_all', type=str, help="Used to update all information in the database")
+#     parser.add_argument("--league_id", dest='league_id', type=str, help="Get the league id that the user would like to update")
 
-if '--update-players' in opts:
-    # Pull updated player info from Sleeper and write to file
-    league.get_players_api()
-    league.clear_players_table()
-    league.save_players_to_database()
+#     args = parser.parse_args()
+#     league = League(args.league_id)
 
-if '--update-man' in opts:
-    league.get_managers()
-    league.clear_managers_table()
-    league.save_managers_to_database()
+#     if args.update_players:
+#         # Pull updated player info from Sleeper and write to file
+#         league.get_players_api()
+#         league.clear_players_table()
+#         league.save_players_to_database()
 
-if '--update-rosters' in opts:
-    league.get_rosters()
+#     if args.update_man:
+#         league.get_managers()
+#         league.clear_managers_table()
+#         league.save_managers_to_database()
 
-if '--update-league' in opts:
-    league.get_league_api()
+#     if args.update_rosters:
+#         league.get_rosters()
 
-if '--update-all' in opts:
-    #Update players
-    league.get_players_api()
-    league.clear_players_table()
-    league.save_players_to_database()
+#     if args.update_league:
+#         league.get_league_api()
 
-    #Update managers
-    league.get_managers()
-    league.clear_managers_table()
-    league.save_managers_to_database()
+#     if args.update_all:
+#         #Update players
+#         league.get_players_api()
+#         league.clear_players_table()
+#         league.save_players_to_database()
 
-    #Update rosters
-    league.get_rosters()
+#         #Update managers
+#         league.get_managers()
+#         league.clear_managers_table()
+#         league.save_managers_to_database()
 
-if '--help' in opts or len(opts) == 1:
-    print('''
-            This script is used to update the local database with data from Sleeper\'s API.
-            To update the players database: "python3 fantasy_analytics.py --update-players"
-            To update the managers database: "python3 fantasy_analytics.py --update-man"
-            To update the rosters database: "python3 fantasy_analytics.py --update-rosters"
-            Provide any combination of the above to update desired content. 
+#         #Update rosters
+#         league.get_rosters()
 
-            Additionally, if updates to all tables is desired: "python3 fantasy_analytics.py --update-all"
-        ''')
+#     if args.help or len(args) == 1:
+#         print('''
+#                 This script is used to update the local database with data from Sleeper\'s API.
+#                 To update the players database: "python3 fantasy_analytics.py --update-players"
+#                 To update the managers database: "python3 fantasy_analytics.py --update-man"
+#                 To update the rosters database: "python3 fantasy_analytics.py --update-rosters"
+#                 Provide any combination of the above to update desired content. 
+
+#                 Additionally, if updates to all tables is desired: "python3 fantasy_analytics.py --update-all"
+#             ''')

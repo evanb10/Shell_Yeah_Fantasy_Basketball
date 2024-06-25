@@ -104,10 +104,12 @@ def league_id(request):
             # Get league id
             league_id = request.POST['league_id']
             
-            sleeper = sleeper_league()
+            sleeper = sleeper_league(league_id)
+            # Update league 
+            sleeper.get_league_api()
             #Update managers
             sleeper.get_managers()
-            sleeper.clear_managers_table()
+            # sleeper.clear_managers_table()
             sleeper.save_managers_to_database()
 
             #Update rosters
