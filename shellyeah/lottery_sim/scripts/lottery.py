@@ -55,7 +55,7 @@ class League:
     def splitCombinations(self):
         tempCombs = self.combinations
         for team in self.teams:
-            team.combinations = tempCombs[:team.odds*10]
+            team.combinations = tempCombs[:int(team.odds*10)]
             tempCombs = list(set(tempCombs)-set(team.combinations))
 
     def oddsCheck(self):
@@ -94,7 +94,10 @@ class League:
                     if winningCombo in team.combinations:
                         print(f'The number {idx+1} overall pick in the 2022 Fantasy Draft goes to...')
                         print(f'THE {team.rank} SEED TEAM! CONGRATS {team.name}!')
+                        print(len(self.combinations))
                         self.combinations = list(set(self.combinations)-set(team.combinations))
+                        print(len(self.combinations))
+
                         team.selected = True
                         self.lottery_results[idx+1] = team.name
 

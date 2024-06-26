@@ -10,7 +10,7 @@ class PercentageAllocationForm(forms.Form):
         # if teams is not None:
         for team in teams:
             print(team)
-            self.fields[f'percentage_{team.name}'] = forms.IntegerField(
+            self.fields[f'percentage_{team.name}'] = forms.DecimalField(
                 label=team.name, min_value=0, max_value=100, required=True, initial=team.odds,
                 widget=forms.NumberInput(attrs={'class': 'form-control'})
             )

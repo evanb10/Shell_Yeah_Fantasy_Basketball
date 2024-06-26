@@ -1,3 +1,4 @@
+import re
 from django.http import HttpResponseBadRequest
 from django.shortcuts import render, redirect
 from django.urls import reverse
@@ -208,35 +209,51 @@ def lottery_results(request, league_id):
     from django.http import HttpResponse
     from .scripts.lottery import League, Team
     import json, time
-
     teams = request.GET.get('cleaned_data')
-    teams_str = teams.replace("'", '"')  # Replace single quotes with double quotes
-    teams_dict = json.loads(teams_str)
-    league = League()
-    for manager, odd in teams_dict.items():
-        manager_name = manager[len('percentage_'):]
-        odds = teams_dict['percentage_' + manager_name]
-        manager_model = Manager.objects.get(display_name=manager_name)
-        wins = manager_model.wins
-        losses = manager_model.losses
-        points_for = manager_model.points_for
-        points_against = manager_model.points_against
+    print(teams)
 
+    if teams:
+        try:
+            # Replace single quotes with double quotes
+            teams_str = teams.replace("'", '"')
 
-        new_team = Team(manager, odds, wins, losses, points_for, points_against)
-        league.addTeam(new_team)
-        
-    league.sort_teams()
+            # Replace Decimal('value') with float value
+            teams_str = re.sub(r'Decimal\("([\d.]+)"\)', r'\1', teams_str)
 
-    league.setRanks()
-    league.splitOdds()
-    league.oddsCheck()
-    league.splitCombinations()
-    league.teams.sort(key = lambda x: x.rank,reverse=True)
-    league.findWinningTeam()
+            # Convert the JSON string to a dictionary
+            teams_dict = json.loads(teams_str)
 
-    context = {'results': league.lottery_results}
-    return render(request, 'lottery_sim_results.html', context)
+            league = League()
+            for manager, odds in teams_dict.items():
+                manager_name = manager[len('percentage_'):]
+                odds = float(odds)  # Ensure odds is a float
+                manager_model = Manager.objects.get(display_name=manager_name)
+                wins = manager_model.wins
+                losses = manager_model.losses
+                points_for = manager_model.points_for
+                points_against = manager_model.points_against
+
+                new_team = Team(manager_name, odds, wins, losses, points_for, points_against)
+                league.addTeam(new_team)
+
+            league.sort_teams()
+            league.setRanks()
+            league.splitOdds()
+            league.oddsCheck()
+            league.splitCombinations()
+            league.teams.sort(key=lambda x: x.rank, reverse=True)
+            league.findWinningTeam()
+
+            context = {'results': league.lottery_results}
+            return render(request, 'lottery_sim_results.html', context)
+
+        except (json.JSONDecodeError, Manager.DoesNotExist, ValueError) as e:
+            # Handle possible errors
+            print(f"Error processing request: {e}")
+            return HttpResponseBadRequest("Invalid data format or manager not found.")
+    else:
+        # Handle the case where cleaned_data is not provided
+        return HttpResponseBadRequest("No data provided.")
 
 def contact(request):
     print(request.method)

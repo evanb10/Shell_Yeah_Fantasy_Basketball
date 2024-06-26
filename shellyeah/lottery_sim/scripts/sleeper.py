@@ -124,6 +124,10 @@ class League():
             json_response = response.json()
 
             for manager in json_response:
+                print('='*20)
+                print(manager)
+                print('='*20)
+
                 # print('\n'*2)
 
                 # print(f'user id: {manager["user_id"]}')
@@ -231,55 +235,49 @@ class League():
 
     def save_managers_to_database(self):
         for manager in self.managers:
-            # Check if manager exists using a SELECT statement
-            exists_stmt = """
+            # Check if manager exists in the specified league
+            exists_in_league_stmt = """
                 SELECT 1
                 FROM lottery_sim_leaguemembership lm
                 INNER JOIN lottery_sim_manager m ON lm.manager_id = m.manager_id
                 WHERE lm.league_id = ? AND m.manager_id = ?
             """
-            self.db_cursor.execute(exists_stmt, (manager.user_id, self.LEAGUE_ID))
+            self.db_cursor.execute(exists_in_league_stmt, (self.LEAGUE_ID, manager.user_id))
+            exists_in_league = self.db_cursor.fetchone() is not None
 
-            # Fetch results (should be empty or single row)
-            exists = self.db_cursor.fetchone() is not None
-
-            if exists:
-            # Update existing manager in Manager table
+            if exists_in_league:
+                # Update existing manager in Manager table
                 update_manager_stmt = """
                     UPDATE lottery_sim_manager
-                    SET team_name=?, display_name=?, wins=?, losses=?, points_for=?, points_against=?
-                    WHERE manager_id=?
+                    SET team_name = ?, display_name = ?, wins = ?, losses = ?, points_for = ?, points_against = ?
+                    WHERE manager_id = ?
                 """
-                self.db_cursor.execute(update_manager_stmt, (manager.team_name, manager.display_name, manager.wins, manager.losses, 0, 0, manager.user_id))
+                self.db_cursor.execute(update_manager_stmt, 
+                    (manager.team_name, manager.display_name, manager.wins, manager.losses, 0, 0, manager.user_id))
             else:
+                # Check if manager exists in Manager table
                 exists_stmt = "SELECT 1 FROM lottery_sim_manager WHERE manager_id = ?"
                 self.db_cursor.execute(exists_stmt, (manager.user_id,))
-
-                # Fetch results (should be empty or single row)
                 exists = self.db_cursor.fetchone() is not None
 
                 if not exists:
-                    # Insert new manager into both tables
+                    # Insert new manager into Manager table
                     insert_manager_stmt = """
                         INSERT INTO lottery_sim_manager (manager_id, team_name, display_name, wins, losses, points_for, points_against)
                         VALUES (?, ?, ?, ?, ?, ?, ?)
                     """
-                    self.db_cursor.execute(insert_manager_stmt, (manager.user_id, manager.team_name, manager.display_name, manager.wins, manager.losses, 0, 0))
-                
-                exists_stmt = "SELECT 1 FROM lottery_sim_leaguemembership WHERE manager_id = ? AND league_id = ?"
-                self.db_cursor.execute(exists_stmt, (manager.user_id,self.LEAGUE_ID,))
+                    self.db_cursor.execute(insert_manager_stmt, 
+                        (manager.user_id, manager.team_name, manager.display_name, manager.wins, manager.losses, 0, 0))
 
-                # Fetch results (should be empty or single row)
-                exists = self.db_cursor.fetchone() is not None
-
-                if not exists:
-                # Insert new league membership
-                    insert_membership_stmt = """
-                        INSERT INTO lottery_sim_leaguemembership (manager_id, league_id)
-                        VALUES (?, ?)
-                    """
-                    self.db_cursor.execute(insert_membership_stmt, (manager.user_id, self.LEAGUE_ID))
+                # Insert into League Membership table if not exists
+                insert_membership_stmt = """
+                    INSERT INTO lottery_sim_leaguemembership (manager_id, league_id)
+                    VALUES (?, ?)
+                """
+                self.db_cursor.execute(insert_membership_stmt, (manager.user_id, self.LEAGUE_ID))
+        
         self.connection.commit()
+
 
     def clear_managers_table(self):
         self.db_cursor.execute('delete from lottery_sim_manager')
