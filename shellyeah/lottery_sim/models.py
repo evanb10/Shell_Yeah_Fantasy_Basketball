@@ -25,8 +25,8 @@ class Manager(models.Model):
   def __repr__(self) -> str:
       return self.__str__()
 
-  def __str__(self) -> str:
-      return self.display_name
+  # def __str__(self) -> str:
+  #     return self.display_name
 
 class Roster(models.Model):
   ''' The roster table will house just the player ids and manager ids and will be used to track current fantasy rosters. '''
