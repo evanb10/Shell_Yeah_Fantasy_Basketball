@@ -37,9 +37,14 @@ class League():
         def __str__(self) -> str:
             return self.firstname + ' ' + self.lastname
 
-    def __init__(self, league_id):
+    def __init__(self, league_id=0):
         self.LEAGUE_ID = league_id
-        self.connection = sqlite3.connect('db.sqlite3')
+        try:
+            self.connection = sqlite3.connect('../../db.sqlite3')
+            print("Connection Succesfull")
+        except sqlite3.Error as e:
+            print(f'Error connecting to database: {e}')
+        
         self.db_cursor = self.connection.cursor()
         self.players = []
         self.managers = []
@@ -230,6 +235,8 @@ class League():
         self.connection.commit()
 
     def clear_players_table(self):
+        print(self.db_cursor.fetchall())
+
         self.db_cursor.execute('delete from lottery_sim_player')
         self.connection.commit()
 
@@ -288,57 +295,54 @@ class League():
 
 
 # Main Section
-#opts = sys.argv
-# if __name__ == "__main__":
-#     parser = argparse.ArgumentParser(description="Parse command line arguments for sleeper.py")
-#     parser.add_argument("--update_players", dest='update_players', type=str, help="Used to update players in the database")
-#     parser.add_argument("--update_man", dest='update_man', type=str, help="")
-#     parser.add_argument("--update_rosters", dest='update_rosters', type=str, help="Used to update rosters in the database")
-#     parser.add_argument("--update_league", dest='update_league', type=str, help="Used to update the league info in the database")
-#     parser.add_argument("--update_all", dest='update_all', type=str, help="Used to update all information in the database")
-#     parser.add_argument("--league_id", dest='league_id', type=str, help="Get the league id that the user would like to update")
+# opts = sys.argv
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Parse command line arguments for sleeper.py")
+    parser.add_argument("--update_players", dest='update_players',  action="store_true", help="Used to update players in the database")
+    parser.add_argument("--update_man", dest='update_man',  action="store_true", help="")
+    parser.add_argument("--update_rosters", dest='update_rosters',  action="store_true", help="Used to update rosters in the database")
+    parser.add_argument("--update_league", dest='update_league',  action="store_true", help="Used to update the league info in the database")
+    parser.add_argument("--update_all", dest='update_all',  action="store_true", help="Used to update all information in the database")
+    parser.add_argument("--league_id", dest='league_id',  action="store_true", help="Get the league id that the user would like to update")
+    # parser.add_argument("--show-help", action="store_true", dest="show_help", help="Display help message")
 
-#     args = parser.parse_args()
-#     league = League(args.league_id)
+    args = parser.parse_args()
+    print(vars(args))
+    # print(any(not getattr(args, attr) for attr in vars(args) if attr != '_help'))
+    # print(vars(args))
+    # if len(vars(args)) == 1 or any(not getattr(args, attr) for attr in vars(args) if attr != 'show_help'):
+    #     print('user needs help')
+    #     parser.print_help()
+    # else:
+    league = League(args.league_id) if args.league_id else League()
 
-#     if args.update_players:
-#         # Pull updated player info from Sleeper and write to file
-#         league.get_players_api()
-#         league.clear_players_table()
-#         league.save_players_to_database()
+    if args.update_players:
+    # Pull updated player info from Ssleeper and write to file
+        league.get_players_api()
+        league.clear_players_table()
+        league.save_players_to_database()
 
-#     if args.update_man:
-#         league.get_managers()
-#         league.clear_managers_table()
-#         league.save_managers_to_database()
+    if args.update_man:
+        league.get_managers()
+        league.clear_managers_table()
+        league.save_managers_to_database()
 
-#     if args.update_rosters:
-#         league.get_rosters()
+    if args.update_rosters:
+        league.get_rosters()
 
-#     if args.update_league:
-#         league.get_league_api()
+    if args.update_league:
+        league.get_league_api()
 
-#     if args.update_all:
-#         #Update players
-#         league.get_players_api()
-#         league.clear_players_table()
-#         league.save_players_to_database()
+    if args.update_all:
+    #Update players
+        league.get_players_api()
+        league.clear_players_table()
+        league.save_players_to_database()
 
-#         #Update managers
-#         league.get_managers()
-#         league.clear_managers_table()
-#         league.save_managers_to_database()
+        #Update managers
+        league.get_managers()
+        league.clear_managers_table()
+        league.save_managers_to_database()
 
-#         #Update rosters
-#         league.get_rosters()
-
-#     if args.help or len(args) == 1:
-#         print('''
-#                 This script is used to update the local database with data from Sleeper\'s API.
-#                 To update the players database: "python3 fantasy_analytics.py --update-players"
-#                 To update the managers database: "python3 fantasy_analytics.py --update-man"
-#                 To update the rosters database: "python3 fantasy_analytics.py --update-rosters"
-#                 Provide any combination of the above to update desired content. 
-
-#                 Additionally, if updates to all tables is desired: "python3 fantasy_analytics.py --update-all"
-#             ''')
+        #Update rosters
+        league.get_rosters()
