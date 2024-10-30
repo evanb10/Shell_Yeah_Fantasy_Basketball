@@ -24,18 +24,21 @@ class League():
             return 'User_id: ' + str(self.user_id) + '\tDisplay_name: ' + self.display_name + '\n' #+ '\nWins: ' + str(self.wins) + '\nLosses' + str(self.losses)
 
     class Player():
-        def __init__(self,firstname,lastname, age, team, id):
+        def __init__(self,firstname,lastname, age, weight, height, position, team, id):
             self.firstname = firstname
             self.lastname = lastname
-            self.team = team
-            self.age = age
+            self.age = age if age else 0
+            self.weight = weight if weight else 0
+            self.height = height if height else 0
+            self.position = position if position else 'N/A'
+            self.team = team if team else 'N/A'
             self.id = id
 
         def __repr__(self) -> str:
             return self.__str__()
 
         def __str__(self) -> str:
-            return self.firstname + ' ' + self.lastname
+            return self.firstname + ' ' + self.lastname + ':' + self.position
 
     def __init__(self, league_id=0):
         self.LEAGUE_ID = league_id
@@ -50,8 +53,8 @@ class League():
         self.managers = []
 
 
-    def add_player_to_league(self, first_name, last_name, age, team, id):
-        player = self.Player(first_name, last_name, age, team, id)
+    def add_player_to_league(self, first_name, last_name, age, weight, height, position, team, id):
+        player = self.Player(first_name, last_name, age, weight, height, position, team, id)
         self.players.append(player)
 
     def remove_letter_keys(self, my_dict):
@@ -171,8 +174,16 @@ class League():
             players = self.remove_letter_keys(json_response)
             for player in players:
                 id = player
-                #player = player.value()
-                self.add_player_to_league(players[id]['first_name'], players[id]['last_name'], players[id]['age'], players[id]['team'], id)
+                self.add_player_to_league(
+                    players[id]['first_name'], 
+                    players[id]['last_name'], 
+                    players[id]['age'],
+                    players[id]['weight'],
+                    players[id]['height'], 
+                    players[id]['position'], 
+                    players[id]['team'], 
+                    id
+                    )
 
         else:
             # The API call failed
@@ -231,13 +242,14 @@ class League():
     def save_players_to_database(self):
         print('SAVING')
         for player in self.players:
-            self.db_cursor.execute('insert into lottery_sim_player (firstname,lastname,age,team,player_id) values (?,?,?,?,?)',[player.firstname,player.lastname,player.age,player.team,player.id])
+            print(player)
+            self.db_cursor.execute('insert into players_player (first_name,last_name,age,weight,height,position,team,player_id) values (?,?,?,?,?,?,?,?)',[player.firstname,player.lastname,player.age,player.weight,player.height,player.position,player.team,player.id])
         self.connection.commit()
 
     def clear_players_table(self):
         print(self.db_cursor.fetchall())
 
-        self.db_cursor.execute('delete from lottery_sim_player')
+        self.db_cursor.execute('delete from players_player')
         self.connection.commit()
 
     def save_managers_to_database(self):
