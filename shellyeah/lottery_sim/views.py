@@ -2,13 +2,13 @@ import re
 from django.http import HttpResponseBadRequest
 from django.shortcuts import render, redirect
 from django.urls import reverse
+
 # from .models import Player#, Roster, Manager, League, LeagueMembership
-from .forms import players_form, league_id_form, odds_form, contact_form
+from .forms import players_form, league_id_form, odds_form
 from .scripts.lottery import League as script_league, Team as script_team
 from .scripts.sleeper import League as sleeper_league
 
-from django.core.mail import send_mail
-from django.template.loader import render_to_string
+
 from django.db.models import Subquery
 
 
@@ -265,34 +265,3 @@ from django.db.models import Subquery
 #     else:
 #         # Handle the case where cleaned_data is not provided
 #         return HttpResponseBadRequest("No data provided.")
-
-def contact(request):
-    print(request.method)
-    if request.method == 'POST':
-        form = contact_form.ContactForm(request.POST)
-
-        if form.is_valid():
-            subject = form.cleaned_data['subject']
-            name = form.cleaned_data['name']
-            email = form.cleaned_data['email']
-            message = form.cleaned_data['message']
-            
-            html = render_to_string('contactform.html', {
-                'name': name,
-                'subject': subject,
-                'email': email,
-                'message': message,
-            })
-            send_mail('The contact form subject','this is the message','eablake153@gmail.com',['eablake153@gmail.com'], html_message=html)
-            content = {
-                "result": "Message was successfully submitted."
-
-            }
-    else:
-        form = contact_form.ContactForm()
-        content = {
-            "form": form,
-        }
-
-    return render(request,'contact.html',content)
-    
