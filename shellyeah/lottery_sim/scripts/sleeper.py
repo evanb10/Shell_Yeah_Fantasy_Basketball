@@ -1,10 +1,24 @@
 import json
 import sqlite3
-import requests
 import sys
 import argparse
 
+import os
+import django
+import requests
 
+
+import os
+import django
+import requests
+
+
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(project_root)
+os.environ.setdefault('DJANGO_SETTINGS_MODULE','shellyeah.settings')
+django.setup()
+
+from players.models import Player
 
 class League():
 
@@ -24,21 +38,21 @@ class League():
             return 'User_id: ' + str(self.user_id) + '\tDisplay_name: ' + self.display_name + '\n' #+ '\nWins: ' + str(self.wins) + '\nLosses' + str(self.losses)
 
     class Player():
-        def __init__(self,firstname,lastname, age, weight, height, position, team, id):
-            self.firstname = firstname
-            self.lastname = lastname
+        def __init__(self,first_name,last_name, age, weight, height, position, team, id):
+            self.first_name = first_name
+            self.last_name = last_name
             self.age = age if age else 0
             self.weight = weight if weight else 0
             self.height = height if height else 0
             self.position = position if position else 'N/A'
             self.team = team if team else 'N/A'
-            self.id = id
+            self.player_id = id
 
         def __repr__(self) -> str:
             return self.__str__()
 
         def __str__(self) -> str:
-            return self.firstname + ' ' + self.lastname + ':' + self.position
+            return self.first_name + ' ' + self.last_name + ':' + self.position
 
     def __init__(self, league_id=0):
         self.LEAGUE_ID = league_id
@@ -243,8 +257,20 @@ class League():
         print('SAVING')
         for player in self.players:
             print(player)
-            self.db_cursor.execute('insert into players_player (first_name,last_name,age,weight,height,position,team,player_id) values (?,?,?,?,?,?,?,?)',[player.firstname,player.lastname,player.age,player.weight,player.height,player.position,player.team,player.id])
-        self.connection.commit()
+            Player.objects.update_or_create(
+                player_id = player.player_id,
+                defaults = {
+                    'first_name' : player.first_name,
+                    'last_name' : player.last_name,
+                    'age' : player.age,
+                    'weight' : player.weight,
+                    'height' : player.height,
+                    'position' : player.position,
+                    'team' : player.team,
+                }
+            )
+            # self.db_cursor.execute('insert into players_player (first_name,last_name,age,weight,height,position,team,player_id) values (?,?,?,?,?,?,?,?)',[player.firstname,player.lastname,player.age,player.weight,player.height,player.position,player.team,player.id])
+        # self.connection.commit()
 
     def clear_players_table(self):
         print(self.db_cursor.fetchall())
@@ -331,7 +357,7 @@ if __name__ == "__main__":
     if args.update_players:
     # Pull updated player info from Ssleeper and write to file
         league.get_players_api()
-        league.clear_players_table()
+        # league.clear_players_table()
         league.save_players_to_database()
 
     if args.update_man:
