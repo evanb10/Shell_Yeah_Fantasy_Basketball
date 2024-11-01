@@ -191,17 +191,16 @@ def update_managers(league_id):
     # Replace <league_id> with the ID of your Sleeper league
 
     # Make the API call
-    response = requests.get('https://api.sleeper.app/v1/league/{}/users'.format(league_id))
+    response_users = requests.get('https://api.sleeper.app/v1/league/{}/users'.format(league_id))
+    response_rosters = requests.get('https://api.sleeper.app/v1/league/{}/rosters'.format(league_id))
 
     # Check if the API call was successful
-    if response.status_code == 200:
+    if response_users.status_code == 200 and response_rosters.status_code == 200:
         # The API call was successful
         # Get the JSON response
-        json_response = response.json()
+        json_response = response_users.json()
 
         for manager in json_response:
-            print('*'*40)
-            print(manager)
             Manager.objects.update_or_create(
                 manager_id = manager['user_id'],
                 league_id = manager['league_id'],
@@ -211,9 +210,13 @@ def update_managers(league_id):
                 },
             )
 
+    
+
     else:
         # The API call failed
         print('API call failed with status code {}'.format(response.status_code))
+
+
 def save_managers_to_database(self):
     for manager in self.managers:
         # Check if manager exists in the specified league
