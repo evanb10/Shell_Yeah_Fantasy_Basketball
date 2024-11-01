@@ -11,6 +11,8 @@ from .scripts.sleeper import League as sleeper_league
 
 from django.db.models import Subquery
 
+import shellyeah.scripts.sleeper as sleeper
+
 
 
 
@@ -109,11 +111,10 @@ def league_id(request):
             # Get league id
             league_id = request.POST['league_id']
             
-            sleeper = sleeper_league(league_id)
             # Update league 
-            sleeper.get_league_api()
+            sleeper.get_league_api(league_id)
             #Update managers
-            sleeper.get_managers()
+            sleeper.get_managers(league_id)
             # sleeper.clear_managers_table()
             sleeper.save_managers_to_database()
 

@@ -19,19 +19,23 @@ class Manager(models.Model):
   ''' Create Manager model that the database will be used to create the database.
       Manager will house any and all necessary information about league managers. '''
   manager_id = models.CharField(max_length=255,primary_key=True)
+  league_id = models.CharField(max_length=255,default=0)
   team_name = models.CharField(max_length=255,null=True)
   display_name = models.CharField(max_length=255)
-  record = models.CharField(max_length=255,null=True)
-  wins = models.IntegerField(null=False,default=0)
-  losses = models.IntegerField(null=False,default=0)
-  points_for = models.IntegerField(null=False, default=0)
-  points_against = models.IntegerField(null=False, default=0)
+#   record = models.CharField(max_length=255,null=True)
+#   wins = models.IntegerField(null=False,default=0)
+#   losses = models.IntegerField(null=False,default=0)
+#   points_for = models.IntegerField(null=False, default=0)
+#   points_against = models.IntegerField(null=False, default=0)
 
   def __repr__(self) -> str:
       return self.__str__()
 
   def __str__(self) -> str:
       return self.display_name
+  
+  class Meta:
+     unique_together = ('manager_id','league_id')
 
 class Roster(models.Model):
   ''' The roster table will house just the player ids and manager ids and will be used to track current fantasy rosters. '''
