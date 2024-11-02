@@ -1,0 +1,32 @@
+[X] *.. Create projects homepage that will link to all projects
+[ ] *** Create lottery sim page.
+        X Take in league number
+        X Create webpage to select/modify default lottery odds
+                X This should pull team names and records prior and create/display ordered list.  
+                X Pull records from each team
+                        - May need to drop last X # of games for playoffs.
+        X Run lottery code.
+        X Update lottery code so that only the bottom 5 teams are included in the lottery.
+                X Currently the split odds function will split the odds in a black box.
+                X If the 5th and 6th teams are tied, the odds will be split between the 2, grouping the 6th team into the lottery.
+                X Tiebreaker goes to higher points for, then higher points against.  Need to pull this info too when updating DB. 
+        X Create lottery template and output results of lottery simulation
+        - Create animation loading screen
+        - Quick draw/skip button
+        - Update so when user inputs league_id, the league info is updated from Sleeper's API. 
+        - Assosiate team name with display name incase no team_name was set. 
+                - Ex. youwaremetobed is the display_name but a team name was not set so None was displaying on website. 
+[ ] **. Create hashing algorithm for the combinations.  
+        - Currently, lottery sim is O(n^2) since we loop through teams and use 'in'
+        - Hash will allow for O(1)
+[X] *** Create a players page which will list a players in nba
+        X Create players model for DB
+        - Create a scheduled task to pull from API to update once a week
+[ ] *** Create new template for the following:
+        - League info
+        - Trade tracker
+        - My team info (i.e record, points scored, best lineup)
+[ ] *.. Waaaay down the line lineup predictions using ML. 
+
+How to call API and write to database. 
+https://www.youtube.com/watch?v=01X_SEhQUbs

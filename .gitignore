@@ -1,2 +1,3 @@
-# created by virtualenv automatically
-*
+# Ignore __pycache__ dir
+__pycache__/
+.DS_Store
