@@ -1,10 +1,24 @@
 import json
 import sqlite3
-import requests
 import sys
 import argparse
 
+import os
+import django
+import requests
 
+
+import os
+import django
+import requests
+
+
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(project_root)
+os.environ.setdefault('DJANGO_SETTINGS_MODULE','shellyeah.settings')
+django.setup()
+
+from players.models import Player
 
 class League():
 
@@ -24,29 +38,37 @@ class League():
             return 'User_id: ' + str(self.user_id) + '\tDisplay_name: ' + self.display_name + '\n' #+ '\nWins: ' + str(self.wins) + '\nLosses' + str(self.losses)
 
     class Player():
-        def __init__(self,firstname,lastname, age, team, id):
-            self.firstname = firstname
-            self.lastname = lastname
-            self.team = team
-            self.age = age
-            self.id = id
+        def __init__(self,first_name,last_name, age, weight, height, position, team, id):
+            self.first_name = first_name
+            self.last_name = last_name
+            self.age = age if age else 0
+            self.weight = weight if weight else 0
+            self.height = height if height else 0
+            self.position = position if position else 'N/A'
+            self.team = team if team else 'N/A'
+            self.player_id = id
 
         def __repr__(self) -> str:
             return self.__str__()
 
         def __str__(self) -> str:
-            return self.firstname + ' ' + self.lastname
+            return self.first_name + ' ' + self.last_name + ':' + self.position
 
-    def __init__(self, league_id):
+    def __init__(self, league_id=0):
         self.LEAGUE_ID = league_id
-        self.connection = sqlite3.connect('db.sqlite3')
+        try:
+            self.connection = sqlite3.connect('../../db.sqlite3')
+            print("Connection Succesfull")
+        except sqlite3.Error as e:
+            print(f'Error connecting to database: {e}')
+        
         self.db_cursor = self.connection.cursor()
         self.players = []
         self.managers = []
 
 
-    def add_player_to_league(self, first_name, last_name, age, team, id):
-        player = self.Player(first_name, last_name, age, team, id)
+    def add_player_to_league(self, first_name, last_name, age, weight, height, position, team, id):
+        player = self.Player(first_name, last_name, age, weight, height, position, team, id)
         self.players.append(player)
 
     def remove_letter_keys(self, my_dict):
@@ -166,8 +188,16 @@ class League():
             players = self.remove_letter_keys(json_response)
             for player in players:
                 id = player
-                #player = player.value()
-                self.add_player_to_league(players[id]['first_name'], players[id]['last_name'], players[id]['age'], players[id]['team'], id)
+                self.add_player_to_league(
+                    players[id]['first_name'], 
+                    players[id]['last_name'], 
+                    players[id]['age'],
+                    players[id]['weight'],
+                    players[id]['height'], 
+                    players[id]['position'], 
+                    players[id]['team'], 
+                    id
+                    )
 
         else:
             # The API call failed
@@ -226,11 +256,26 @@ class League():
     def save_players_to_database(self):
         print('SAVING')
         for player in self.players:
-            self.db_cursor.execute('insert into lottery_sim_player (firstname,lastname,age,team,player_id) values (?,?,?,?,?)',[player.firstname,player.lastname,player.age,player.team,player.id])
-        self.connection.commit()
+            print(player)
+            Player.objects.update_or_create(
+                player_id = player.player_id,
+                defaults = {
+                    'first_name' : player.first_name,
+                    'last_name' : player.last_name,
+                    'age' : player.age,
+                    'weight' : player.weight,
+                    'height' : player.height,
+                    'position' : player.position,
+                    'team' : player.team,
+                }
+            )
+            # self.db_cursor.execute('insert into players_player (first_name,last_name,age,weight,height,position,team,player_id) values (?,?,?,?,?,?,?,?)',[player.firstname,player.lastname,player.age,player.weight,player.height,player.position,player.team,player.id])
+        # self.connection.commit()
 
     def clear_players_table(self):
-        self.db_cursor.execute('delete from lottery_sim_player')
+        print(self.db_cursor.fetchall())
+
+        self.db_cursor.execute('delete from players_player')
         self.connection.commit()
 
     def save_managers_to_database(self):
@@ -288,57 +333,54 @@ class League():
 
 
 # Main Section
-#opts = sys.argv
-# if __name__ == "__main__":
-#     parser = argparse.ArgumentParser(description="Parse command line arguments for sleeper.py")
-#     parser.add_argument("--update_players", dest='update_players', type=str, help="Used to update players in the database")
-#     parser.add_argument("--update_man", dest='update_man', type=str, help="")
-#     parser.add_argument("--update_rosters", dest='update_rosters', type=str, help="Used to update rosters in the database")
-#     parser.add_argument("--update_league", dest='update_league', type=str, help="Used to update the league info in the database")
-#     parser.add_argument("--update_all", dest='update_all', type=str, help="Used to update all information in the database")
-#     parser.add_argument("--league_id", dest='league_id', type=str, help="Get the league id that the user would like to update")
+# opts = sys.argv
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Parse command line arguments for sleeper.py")
+    parser.add_argument("--update_players", dest='update_players',  action="store_true", help="Used to update players in the database")
+    parser.add_argument("--update_man", dest='update_man',  action="store_true", help="")
+    parser.add_argument("--update_rosters", dest='update_rosters',  action="store_true", help="Used to update rosters in the database")
+    parser.add_argument("--update_league", dest='update_league',  action="store_true", help="Used to update the league info in the database")
+    parser.add_argument("--update_all", dest='update_all',  action="store_true", help="Used to update all information in the database")
+    parser.add_argument("--league_id", dest='league_id',  action="store_true", help="Get the league id that the user would like to update")
+    # parser.add_argument("--show-help", action="store_true", dest="show_help", help="Display help message")
 
-#     args = parser.parse_args()
-#     league = League(args.league_id)
+    args = parser.parse_args()
+    print(vars(args))
+    # print(any(not getattr(args, attr) for attr in vars(args) if attr != '_help'))
+    # print(vars(args))
+    # if len(vars(args)) == 1 or any(not getattr(args, attr) for attr in vars(args) if attr != 'show_help'):
+    #     print('user needs help')
+    #     parser.print_help()
+    # else:
+    league = League(args.league_id) if args.league_id else League()
 
-#     if args.update_players:
-#         # Pull updated player info from Sleeper and write to file
-#         league.get_players_api()
-#         league.clear_players_table()
-#         league.save_players_to_database()
+    if args.update_players:
+    # Pull updated player info from Ssleeper and write to file
+        league.get_players_api()
+        # league.clear_players_table()
+        league.save_players_to_database()
 
-#     if args.update_man:
-#         league.get_managers()
-#         league.clear_managers_table()
-#         league.save_managers_to_database()
+    if args.update_man:
+        league.get_managers()
+        league.clear_managers_table()
+        league.save_managers_to_database()
 
-#     if args.update_rosters:
-#         league.get_rosters()
+    if args.update_rosters:
+        league.get_rosters()
 
-#     if args.update_league:
-#         league.get_league_api()
+    if args.update_league:
+        league.get_league_api()
 
-#     if args.update_all:
-#         #Update players
-#         league.get_players_api()
-#         league.clear_players_table()
-#         league.save_players_to_database()
+    if args.update_all:
+    #Update players
+        league.get_players_api()
+        league.clear_players_table()
+        league.save_players_to_database()
 
-#         #Update managers
-#         league.get_managers()
-#         league.clear_managers_table()
-#         league.save_managers_to_database()
+        #Update managers
+        league.get_managers()
+        league.clear_managers_table()
+        league.save_managers_to_database()
 
-#         #Update rosters
-#         league.get_rosters()
-
-#     if args.help or len(args) == 1:
-#         print('''
-#                 This script is used to update the local database with data from Sleeper\'s API.
-#                 To update the players database: "python3 fantasy_analytics.py --update-players"
-#                 To update the managers database: "python3 fantasy_analytics.py --update-man"
-#                 To update the rosters database: "python3 fantasy_analytics.py --update-rosters"
-#                 Provide any combination of the above to update desired content. 
-
-#                 Additionally, if updates to all tables is desired: "python3 fantasy_analytics.py --update-all"
-#             ''')
+        #Update rosters
+        league.get_rosters()
