@@ -1,0 +1,206 @@
+[
+    {
+        "avatar": "82e1e83aec8d9fa7d886adf579e4e465",
+        "display_name": "tjwalter",
+        "is_bot": false,
+        "is_owner": null,
+        "league_id": "949313408443195392",
+        "metadata": {
+            "allow_pn": "on",
+            "archived": "off",
+            "avatar": "https://sleepercdn.com/uploads/fc2be78a009a792cd8a21c351b913654.jpg",
+            "join_voice_pn": "off",
+            "league_report_pn": "on",
+            "mention_pn": "on",
+            "player_like_pn": "on",
+            "player_nickname_update": "off",
+            "team_name": "LeWembanyama",
+            "team_name_update": "on",
+            "trade_block_pn": "on",
+            "transaction_commissioner": "on",
+            "transaction_free_agent": "on",
+            "transaction_trade": "on",
+            "transaction_waiver": "on",
+            "user_message_pn": "on"
+        },
+        "settings": null,
+        "user_id": "609267172270731264"
+    },
+    {
+        "avatar": null,
+        "display_name": "mikeyRC",
+        "is_bot": false,
+        "is_owner": false,
+        "league_id": "949313408443195392",
+        "metadata": {
+            "allow_pn": "on",
+            "avatar": "https://sleepercdn.com/uploads/f314dfd6bb9518c535acbf19f9adf41b.jpg",
+            "mention_pn": "on",
+            "team_name": "God Squad "
+        },
+        "settings": null,
+        "user_id": "724418159989313536"
+    },
+    {
+        "avatar": "eb88906d60eff2ea1d058d60d6f648a6",
+        "display_name": "jjgambino9",
+        "is_bot": false,
+        "is_owner": false,
+        "league_id": "949313408443195392",
+        "metadata": {
+            "allow_pn": "on",
+            "archived": "off",
+            "mention_pn": "on",
+            "team_name": "Del Fuego Monday Margs"
+        },
+        "settings": null,
+        "user_id": "729578872735154176"
+    },
+    {
+        "avatar": "6f98afd0cb27546046256ddbd291b01d",
+        "display_name": "BuyFSR",
+        "is_bot": false,
+        "is_owner": true,
+        "league_id": "949313408443195392",
+        "metadata": {
+            "allow_pn": "on",
+            "archived": "off",
+            "mention_pn": "on",
+            "team_name": "Seattle's Expansion Team"
+        },
+        "settings": null,
+        "user_id": "740240697969569792"
+    },
+    {
+        "avatar": "f0edbf4278f53f9425db175073df6584",
+        "display_name": "mbarbone99",
+        "is_bot": false,
+        "is_owner": false,
+        "league_id": "949313408443195392",
+        "metadata": {
+            "allow_pn": "on",
+            "allow_sms": "on",
+            "mention_pn": "on",
+            "team_name": "Dame of Thrones"
+        },
+        "settings": null,
+        "user_id": "742565510578851840"
+    },
+    {
+        "avatar": "f03c9bec8507b3b1f199a8d2552a73b9",
+        "display_name": "MrPuffy",
+        "is_bot": false,
+        "is_owner": false,
+        "league_id": "949313408443195392",
+        "metadata": {
+            "allow_pn": "on",
+            "avatar": "https://sleepercdn.com/uploads/db3cd46d4ee602165d9f0a77ad7931ed.jpg",
+            "mention_pn": "on",
+            "team_name": "Portuguese Pandas "
+        },
+        "settings": null,
+        "user_id": "743929476488024064"
+    },
+    {
+        "avatar": "e7af4deab0289b4f5505646424895246",
+        "display_name": "Nimeshh",
+        "is_bot": false,
+        "is_owner": false,
+        "league_id": "949313408443195392",
+        "metadata": {
+            "allow_pn": "on",
+            "allow_sms": "on",
+            "mention_pn": "on",
+            "team_name": "Brown boyzz"
+        },
+        "settings": null,
+        "user_id": "744037691984908288"
+    },
+    {
+        "avatar": "4f4090e5e9c3941414db40a871e3e909",
+        "display_name": "Beaverr",
+        "is_bot": false,
+        "is_owner": false,
+        "league_id": "949313408443195392",
+        "metadata": {
+            "allow_pn": "on",
+            "avatar": "https://sleepercdn.com/uploads/bf4dc3c7d8f9a3bd375598a97c44215c.jpg",
+            "mention_pn": "on",
+            "team_name": "Big Balling Beavs"
+        },
+        "settings": null,
+        "user_id": "744409796576567296"
+    },
+    {
+        "avatar": "f9581d9a1adb81642546d1b01c1bebc3",
+        "display_name": "r0ckman",
+        "is_bot": false,
+        "is_owner": false,
+        "league_id": "949313408443195392",
+        "metadata": {
+            "allow_pn": "on",
+            "avatar": "https://sleepercdn.com/uploads/f9581d9a1adb81642546d1b01c1bebc3.jpg",
+            "join_voice_pn": "off",
+            "mention_pn": "on",
+            "player_like_pn": "on",
+            "player_nickname_update": "off",
+            "team_name": "Prevailing Penguins",
+            "team_name_update": "off",
+            "trade_block_pn": "on",
+            "transaction_commissioner": "on",
+            "transaction_free_agent": "on",
+            "transaction_trade": "on",
+            "transaction_waiver": "on",
+            "user_message_pn": "on"
+        },
+        "settings": null,
+        "user_id": "744409879393132544"
+    },
+    {
+        "avatar": "b319fdf8b7b5b0359d3c78622ba4d70c",
+        "display_name": "LactosePapi",
+        "is_bot": false,
+        "is_owner": false,
+        "league_id": "949313408443195392",
+        "metadata": {
+            "allow_pn": "on",
+            "allow_sms": "on",
+            "mention_pn": "on",
+            "team_name": "Minnesota Milkers "
+        },
+        "settings": null,
+        "user_id": "744410926727606272"
+    },
+    {
+        "avatar": "15d7cf259bc30eab8f6120f45f652fb6",
+        "display_name": "youwearmetobed",
+        "is_bot": false,
+        "is_owner": false,
+        "league_id": "949313408443195392",
+        "metadata": {
+            "allow_pn": "on",
+            "allow_sms": "on",
+            "avatar": "https://sleepercdn.com/uploads/35f2eaf730aa9d5439d5674f24befad4.jpg",
+            "mention_pn": "on",
+            "team_name": "Warsaw Weevils"
+        },
+        "settings": null,
+        "user_id": "744411413585637376"
+    },
+    {
+        "avatar": "b3338675f635c2c1f42b469621d38ec6",
+        "display_name": "Fashion",
+        "is_bot": false,
+        "is_owner": false,
+        "league_id": "949313408443195392",
+        "metadata": {
+            "allow_pn": "on",
+            "allow_sms": "on",
+            "avatar": "https://sleepercdn.com/uploads/62d5316743c816d6cfe5b0171e767596.jpg",
+            "mention_pn": "on",
+            "team_name": "Columbus Crew"
+        },
+        "settings": null,
+        "user_id": "746474847927951360"
+    }
+]

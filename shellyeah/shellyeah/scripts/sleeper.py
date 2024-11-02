@@ -83,37 +83,60 @@ def get_rosters(league_id):
         # The API call failed
         print('API call failed with status code {}'.format(response.status_code))
 
-def get_players_api(self):
+# def get_players_api(self):
 
-    # Make the API call
-    response = requests.get('https://api.sleeper.app/v1/players/nba')
+#     # Make the API call
+#     response = requests.get('https://api.sleeper.app/v1/players/nba')
 
-    # Check if the API call was successful
-    if response.status_code == 200:
-        # The API call was successful
-        # Get the JSON response
-        json_response = response.json()
-        players = self.remove_letter_keys(json_response)
-        for player in players:
-            id = player
-            add_player_to_league(
-                players[id]['first_name'], 
-                players[id]['last_name'], 
-                players[id]['age'],
-                players[id]['weight'],
-                players[id]['height'], 
-                players[id]['position'], 
-                players[id]['team'], 
-                id
-                )
+#     # Check if the API call was successful
+#     if response.status_code == 200:
+#         # The API call was successful
+#         # Get the JSON response
+#         json_response = response.json()
+#         players = self.remove_letter_keys(json_response)
+#         for player in players:
+#             id = player
+#             add_player_to_league(
+#                 players[id]['first_name'], 
+#                 players[id]['last_name'], 
+#                 players[id]['age'],
+#                 players[id]['weight'],
+#                 players[id]['height'], 
+#                 players[id]['position'], 
+#                 players[id]['team'], 
+#                 id
+#                 )
 
-    else:
-        # The API call failed
-        print('API call failed with status code {}'.format(response.status_code))
+#     else:
+#         # The API call failed
+#         print('API call failed with status code {}'.format(response.status_code))
+def get_prev_league_api(prev_id):
+    response_rosters = requests.get('https://api.sleeper.app/v1/league/{}/rosters'.format(prev_id))
+    response_users = requests.get('https://api.sleeper.app/v1/league/{}/users'.format(prev_id))
 
-def get_league_api(self):
+    from collections import defaultdict
+
+    # Initialize a dictionary with a nested structure for wins and losses.
+    results = defaultdict(lambda: {"user_name": "", "wins": 0, "losses": 0, "pf": 0, "pa": 0})
+    print(response_users.json())
+    users_dict = {user['user_id'] : user for user in response_users.json()}
+
+    # Loop through each record
+    for record in response_rosters.json():
+        owner_id = record['owner_id']
+        results[owner_id]["user_name"] = users_dict[owner_id]['display_name']
+        results[owner_id]["wins"] = record["settings"]['wins']
+        results[owner_id]["losses"] = record["settings"]['losses']
+        results[owner_id]["pf"] = record["settings"]['fpts']
+        results[owner_id]["pa"] = record["settings"]['fpts_against']
+
+    # Convert defaultdict to a regular dict for returning
+    return dict(results)
+
+def get_league_api(league_id):
     # Fetch league data from API
-    response = requests.get(f'https://api.sleeper.app/v1/league/{self.LEAGUE_ID}')
+    response = requests.get('https://api.sleeper.app/v1/league/{}'.format(league_id))
+    
 
     # Check for successful response
     if response.status_code == 200:
@@ -127,26 +150,28 @@ def get_league_api(self):
         previous_league_id = json_response['previous_league_id']
         year = json_response['season']
 
-        # Check if league already exists (using SELECT statement)
-        exists_stmt = "SELECT 1 FROM lottery_sim_league WHERE league_id=?"
-        self.db_cursor.execute(exists_stmt, (league_id,))
+        print(json_response)
 
-        # Check if any results exist (league exists if results exist)
-        exists = self.db_cursor.fetchone() is not None
+        # # Check if league already exists (using SELECT statement)
+        # exists_stmt = "SELECT 1 FROM lottery_sim_league WHERE league_id=?"
+        # self.db_cursor.execute(exists_stmt, (league_id,))
 
-        if exists:
-            # Update existing league
-            update_stmt = """
-                UPDATE lottery_sim_league
-                SET num_of_teams=?, sport=?, league_name=?, previous_league_id=?, year=?
-                WHERE league_id=?
-            """
-            self.db_cursor.execute(update_stmt, (num_rosters, sport, league_name, previous_league_id, year, league_id))
-        else:
-            # Insert new league
-            self.db_cursor.execute('insert into lottery_sim_league (league_id, num_of_teams, sport, league_name, previous_league_id, year) values (?,?,?,?,?,?)',
-                                    [league_id, num_rosters, sport, league_name, previous_league_id, year])
-        self.connection.commit()
+        # # Check if any results exist (league exists if results exist)
+        # exists = self.db_cursor.fetchone() is not None
+
+        # if exists:
+        #     # Update existing league
+        #     update_stmt = """
+        #         UPDATE lottery_sim_league
+        #         SET num_of_teams=?, sport=?, league_name=?, previous_league_id=?, year=?
+        #         WHERE league_id=?
+        #     """
+        #     self.db_cursor.execute(update_stmt, (num_rosters, sport, league_name, previous_league_id, year, league_id))
+        # else:
+        #     # Insert new league
+        #     self.db_cursor.execute('insert into lottery_sim_league (league_id, num_of_teams, sport, league_name, previous_league_id, year) values (?,?,?,?,?,?)',
+        #                             [league_id, num_rosters, sport, league_name, previous_league_id, year])
+        # self.connection.commit()
 
 
 def save_roster_to_database(self, owner_id, roster, points_for, points_against):

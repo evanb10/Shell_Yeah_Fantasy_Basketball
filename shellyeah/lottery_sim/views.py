@@ -3,8 +3,10 @@ from django.http import HttpResponseBadRequest
 from django.shortcuts import render, redirect
 from django.urls import reverse
 
+from lottery_sim.models import League
+
 # from .models import Player#, Roster, Manager, League, LeagueMembership
-from .forms import players_form, league_id_form, odds_form
+from .forms import league_id_form, odds_form
 from .scripts.lottery import League as script_league, Team as script_team
 from .scripts.sleeper import League as sleeper_league
 
@@ -17,87 +19,6 @@ import shellyeah.scripts.sleeper as sleeper
 
 
 # Create your views here.
-
-# def players(request):
-#     ''' Players Page '''
-#     # filter form to be displayed. 
-#     # form = players_form.PlayerForm(request.POST or None)
-
-#     # Context that will be sent to the associated template
-#     context = {}
-
-#     # Begin request logic
-#     if request.method == "POST":
-
-#         # Verify that the form is valid using built-in Django
-#         # if form.is_valid():
-#         if True:
-#             # Determine if filters are present in the request. True or False
-#             on_roster_exists = "on_roster" in request.POST
-#             managers_exist = "managers" in request.POST
-
-#             # If user chose on roster and a manager AND the manager chosen was not the None option
-#             if (on_roster_exists and managers_exist) and not('None' in request.POST['managers']):
-#                 pass
-#                 # # From Rosters table, pull player ids with the manager_id associated with the manager selected from the form. 
-#                 # manager_query = Roster.objects.filter(manager_id=request.POST['managers']).values_list('player_id',flat=True)
-#                 # # Use the select players from the previous command to get the player info from player table. 
-#                 # players_from_second_table = Player.objects.filter(player_id__in=manager_query).values()
-#                 # # Get all players from table, but exclude all players not on actual NBA rosters
-#                 # players = Player.objects.exclude(team=None)
-#                 # # Get the intersection of the two queries.  
-#                 # intersection = players_from_second_table.intersection(players)
-#                 # # Get Manager team name using manager id number from form
-#                 # manager = Manager.objects.filter(manager_id=request.POST['managers']).only('team_name')
-#                 # # Set the context equal to the intersection
-#                 # context['players'] = intersection
-#                 # context['caption'] = "List of NBA Players on " + str(manager[0]) + " roster"
-
-
-#             # If the user chose on roster filter ONLY
-#             elif on_roster_exists:
-#                 # Get all players from table, but exclude all players not on actual NBA rosters
-#                 players = Player.objects.exclude(team=None)
-#                 # Set the context equal to the intersection
-#                 context['players'] = players
-#                 context['caption'] = "List of NBA Players on Rosters"
-                
-#             # If the user chose a manager filter ONLY
-#             elif managers_exist:
-#                 # If the manager chosen was not the None option
-#                 if not('None' in request.POST['managers']):
-#                     pass
-#                     # # From Rosters table, pull player ids with the manager_id associated with the manager selected from the form. 
-#                     # manager_query = Roster.objects.filter(manager_id=request.POST['managers']).values_list('player_id',flat=True)
-#                     # # Use the select players from the previous command to get the player info from player table. 
-#                     # players_from_second_table = Player.objects.filter(player_id__in=manager_query).values()
-#                     # # Get Manager team name using manager id number from form
-#                     # manager = Manager.objects.filter(manager_id=request.POST['managers']).only('team_name')
-#                     # context['caption'] = "List of NBA Players on " + str(manager[0]) + " roster"
-#                     # # Set the context equal to the players
-#                     # context['players'] = players_from_second_table
-#                 else:
-#                     # If the -- None -- option was chosen from the players form.
-#                     players = Player.objects.all().values()
-#                     # Set the context equal to the players
-#                     context['players'] = players
-#             else:
-#                 # If no option is selected
-#                 players = Player.objects.all().values()
-#                 # Set the context equal to the players
-#                 context['players'] = players
-#         else:
-#             # Print the error fromt he form
-#             print(form.errors)
-#     else:
-#         # Initial GET request so just pull all players from database
-#         players = Player.objects.all().values()
-#         # Set the context equal to the players
-#         context['players'] = players
-#     # Add the form to the context
-#     # context['form'] = form
-       
-#     return render(request,'players.html',context)
 
 def league_id(request):
     context = {}
@@ -112,14 +33,14 @@ def league_id(request):
             league_id = request.POST['league_id']
             
             # Update league 
-            sleeper.get_league_api(league_id)
+            # sleeper.get_league_api(league_id)
             #Update managers
-            sleeper.get_managers(league_id)
+            sleeper.update_managers(league_id)
             # sleeper.clear_managers_table()
-            sleeper.save_managers_to_database()
+            # sleeper.save_managers_to_database()
 
             #Update rosters
-            sleeper.get_rosters()
+            # sleeper.get_rosters()
             return redirect(reverse('get_odds', kwargs={'league_id': league_id}))
 
             # Pull all information about a league given the provided league ID
@@ -140,12 +61,6 @@ def get_odds(request,league_id):
             }
         return odds_dict[num]
     
-    # Define a function to calculate wins from the record string
-    def get_wins(record):
-        if not record:
-            return 0
-        return record.count('W')
-    
     def extract_percentage_values(data):
         percentage_values = []
         for key, value in data.items():
@@ -155,22 +70,30 @@ def get_odds(request,league_id):
         return percentage_values
 
     league_query = League.objects.filter(league_id=league_id).values().first()
+    
     if league_query:
+        prev_league = league_query['previous_league_id']
+        prev_records = sleeper.get_prev_league_api(prev_league)
+
+        
+
+
         # Prepare context data
-        memebership_query = LeagueMembership.objects.filter(league_id=league_id).values_list('manager_id',flat=True)
-        print(memebership_query)
-        teams = Manager.objects.filter(manager_id__in=Subquery(memebership_query))
-        print(teams)
+        # memebership_query = LeagueMembership.objects.filter(league_id=league_id).values_list('manager_id',flat=True)
+        # print(memebership_query)
+        # teams = Manager.objects.filter(manager_id__in=Subquery(memebership_query))
+        # print(teams)
 
         # teams = Manager.objects.filter(league_id=league_id)
         league_ = script_league()
-        for manager in teams:
-            manager_name = manager.display_name
+        for manager in prev_records.items():
+            print(manager)
+            manager_name = manager[1]['user_name']
             # odds_ = teams['percentage_' + manager_name]
-            wins = manager.wins
-            losses = manager.losses
-            points_for = manager.points_for
-            points_against = manager.points_against
+            wins = manager[1]['wins']
+            losses = manager[1]['losses']
+            points_for = manager[1]['pf']
+            points_against = manager[1]['pa']
 
 
             new_team = script_team(manager_name, 0, wins, losses, points_for, points_against)
