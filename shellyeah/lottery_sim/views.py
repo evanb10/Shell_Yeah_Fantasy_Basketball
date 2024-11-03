@@ -75,19 +75,9 @@ def get_odds(request,league_id):
         prev_league = league_query['previous_league_id']
         prev_records = sleeper.get_prev_league_api(prev_league)
 
-        
-
-
-        # Prepare context data
-        # memebership_query = LeagueMembership.objects.filter(league_id=league_id).values_list('manager_id',flat=True)
-        # print(memebership_query)
-        # teams = Manager.objects.filter(manager_id__in=Subquery(memebership_query))
-        # print(teams)
-
         # teams = Manager.objects.filter(league_id=league_id)
         league_ = script_league()
         for manager in prev_records.items():
-            print(manager)
             manager_name = manager[1]['user_name']
             # odds_ = teams['percentage_' + manager_name]
             wins = manager[1]['wins']
@@ -96,28 +86,47 @@ def get_odds(request,league_id):
             points_against = manager[1]['pa']
 
 
-            new_team = script_team(manager_name, 0, wins, losses, points_for, points_against)
+            new_team = script_team(manager_name, 0, 0, wins, losses, points_for, points_against)
             league_.addTeam(new_team)
     
         league_.sort_teams()
         odds_values = odds(league_query['num_of_teams'])
         for idx,team in enumerate(league_.teams,start=1):
             team.odds = odds_values[-idx]
-        # sorted_list = sorted(teams, key=lambda x: (get_wins(x[1]), x[0]))
-        # zipped_data = zip([team[0] for team in sorted_list], odds_values)
-        # teams_list = list(zipped_data)
         context['teams'] = league_.teams
     else:
         return HttpResponseBadRequest("League not found.")
 
     if request.method == "POST":
+        # print(league_query)
         # teams = extract_percentage_values(request.POST)
         form_odds = odds_form.PercentageAllocationForm(request.POST or None, teams=league_.teams)
 
         if form_odds.is_valid():
             cleaned_data = form_odds.cleaned_data
-            # Process cleaned data
-            return redirect(reverse('lottery_results', kwargs={'league_id': league_id})+ f'?cleaned_data={cleaned_data}')
+            # Step 1: Update odds for each team based on the cleaned_data
+            for team in league_.teams:
+                team_name = team.name
+                # Assuming `cleaned_data` contains team names as keys and odds as values
+                if f'percentage_{team_name}' in cleaned_data:
+                    team.odds = cleaned_data[f'percentage_{team_name}']
+            
+            # Step 2: Store the updated teams in the session for the next view
+            request.session['updated_teams'] = [
+                {
+                    'name': team.name,
+                    'rank': team.rank,
+                    'wins': team.wins,
+                    'losses': team.losses,
+                    'odds': float(team.odds),
+                    'points_for': float(team.points_for),
+                    'points_against': float(team.points_against),
+                }
+                for team in league_.teams
+            ]
+            
+            # Redirect to the lottery results view
+            return redirect(reverse('lottery_results', kwargs={'league_id': league_id}))
         else:
             context['form'] = form_odds  # Pass the form with errors to the template
             return render(request, 'lottery_sim.html', context)
@@ -130,52 +139,58 @@ def get_odds(request,league_id):
 
 
 
-# def lottery_results(request, league_id):
-#     from django.http import HttpResponse
-#     from .scripts.lottery import League, Team
-#     import json, time
-#     teams = request.GET.get('cleaned_data')
-#     print(teams)
+def lottery_results(request, league_id):
+    from django.http import HttpResponse
+    from .scripts.lottery import League, Team
+    import json, time
+    # teams = request.GET.get('cleaned_data')
+    # print(teams)
+    updated_teams = request.session.get('updated_teams')
+    # print(updated_teams)
 
-#     if teams:
-#         try:
-#             # Replace single quotes with double quotes
-#             teams_str = teams.replace("'", '"')
+    teams = updated_teams
 
-#             # Replace Decimal('value') with float value
-#             teams_str = re.sub(r'Decimal\("([\d.]+)"\)', r'\1', teams_str)
+    if teams:
+        try:
+            # Replace single quotes with double quotes
+            # teams_str = teams.replace("'", '"')
 
-#             # Convert the JSON string to a dictionary
-#             teams_dict = json.loads(teams_str)
+            # Replace Decimal('value') with float value
+            # teams_str = re.sub(r'Decimal\("([\d.]+)"\)', r'\1', teams_str)
 
-#             league = League()
-#             for manager, odds in teams_dict.items():
-#                 manager_name = manager[len('percentage_'):]
-#                 odds = float(odds)  # Ensure odds is a float
-#                 manager_model = Manager.objects.get(display_name=manager_name)
-#                 wins = manager_model.wins
-#                 losses = manager_model.losses
-#                 points_for = manager_model.points_for
-#                 points_against = manager_model.points_against
+            # Convert the JSON string to a dictionary
+            # teams_dict = json.loads(teams_str)
 
-#                 new_team = Team(manager_name, odds, wins, losses, points_for, points_against)
-#                 league.addTeam(new_team)
+            league = League()
+            print(teams)
+            for manager in teams:
+                manager_name = manager['name']
+                odds = manager['odds']  # Ensure odds is a float
+                # manager_model = Manager.objects.get(display_name=manager_name)
+                wins = manager['wins']
+                losses = manager['losses']
+                points_for = manager['points_for']
+                points_against = manager['points_against']
+                rank = manager['rank']
 
-#             league.sort_teams()
-#             league.setRanks()
-#             league.splitOdds()
-#             league.oddsCheck()
-#             league.splitCombinations()
-#             league.teams.sort(key=lambda x: x.rank, reverse=True)
-#             league.findWinningTeam()
+                new_team = Team(manager_name, rank, odds, wins, losses, points_for, points_against)
+                league.addTeam(new_team)
 
-#             context = {'results': league.lottery_results}
-#             return render(request, 'lottery_sim_results.html', context)
+            league.sort_teams()
+            league.setRanks()
+            league.splitOdds()
+            league.oddsCheck()
+            league.splitCombinations()
+            league.teams.sort(key=lambda x: x.rank, reverse=True)
+            league.findWinningTeam()
 
-#         except (json.JSONDecodeError, Manager.DoesNotExist, ValueError) as e:
-#             # Handle possible errors
-#             print(f"Error processing request: {e}")
-#             return HttpResponseBadRequest("Invalid data format or manager not found.")
-#     else:
-#         # Handle the case where cleaned_data is not provided
-#         return HttpResponseBadRequest("No data provided.")
+            context = {'results': league.lottery_results}
+            return render(request, 'lottery_sim_results.html', context)
+
+        except (json.JSONDecodeError, ValueError) as e:
+            # Handle possible errors
+            print(f"Error processing request: {e}")
+            return HttpResponseBadRequest("Invalid data format or manager not found.")
+    else:
+        # Handle the case where cleaned_data is not provided
+        return HttpResponseBadRequest("No data provided.")

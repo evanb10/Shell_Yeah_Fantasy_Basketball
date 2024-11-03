@@ -112,7 +112,7 @@ class League():
             # The API call was successful
             # Get the JSON response
             json_response = response.json()
-            print(json_response)
+            # print(json_response)
 
             for roster in json_response:
                 # print(roster)

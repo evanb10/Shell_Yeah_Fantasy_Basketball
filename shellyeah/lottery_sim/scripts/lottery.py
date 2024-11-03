@@ -184,9 +184,9 @@ class League:
         
 class Team:
     # def __init__(self,name,rank,wins,losses):
-    def __init__(self,name,odds,wins,losses,points_for,points_against):
+    def __init__(self,name,rank,odds,wins,losses,points_for,points_against):
         self.name = name
-        self.rank = None 
+        self.rank = rank 
         self.wins = wins
         self.losses = losses
         self.odds = odds 

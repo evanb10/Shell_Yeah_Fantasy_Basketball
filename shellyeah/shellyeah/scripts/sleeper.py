@@ -63,7 +63,7 @@ def get_rosters(league_id):
         # The API call was successful
         # Get the JSON response
         json_response = response.json()
-        print(json_response)
+        # print(json_response)
 
         for roster in json_response:
             # print(roster)
@@ -118,7 +118,7 @@ def get_prev_league_api(prev_id):
 
     # Initialize a dictionary with a nested structure for wins and losses.
     results = defaultdict(lambda: {"user_name": "", "wins": 0, "losses": 0, "pf": 0, "pa": 0})
-    print(response_users.json())
+    # print(response_users.json())
     users_dict = {user['user_id'] : user for user in response_users.json()}
 
     # Loop through each record
@@ -150,7 +150,7 @@ def get_league_api(league_id):
         previous_league_id = json_response['previous_league_id']
         year = json_response['season']
 
-        print(json_response)
+        # print(json_response)
 
         # # Check if league already exists (using SELECT statement)
         # exists_stmt = "SELECT 1 FROM lottery_sim_league WHERE league_id=?"
