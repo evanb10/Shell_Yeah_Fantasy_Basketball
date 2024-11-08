@@ -1,0 +1,137 @@
+{% extends "master.html" %}
+{% load static %}
+
+{% block title %}
+  Homepage
+{% endblock %}
+{% block body_class %} class="bg-gray-100" {% endblock %}
+
+{% block content %}
+
+{% comment %} <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+  <div class="container">
+      <a class="navbar-brand fw-bold" href="#">Fantasy Hoops Hub</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+          <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav me-auto">
+              <li class="nav-item">
+                  <a class="nav-link" href="#">Dashboard</a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link" href="#">My Teams</a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link" href="#">League Info</a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link" href="#">Players</a>
+              </li>
+          </ul>
+          <div class="d-flex">
+              <button class="btn btn-light">Sign In</button>
+          </div>
+      </div>
+  </div>
+</nav> {% endcomment %}
+
+<!-- Hero Section -->
+<section class="hero-section">
+  <div class="container">
+      <div class="row align-items-center">
+          <div class="col-lg-6">
+              <h1 class="display-4 fw-bold mb-4">Dominate Your Fantasy Basketball League</h1>
+              <p class="lead mb-4">Get real-time updates, advanced statistics, and AI-powered insights for your Sleeper fantasy basketball leagues. Stay ahead of the competition with our comprehensive tools and analysis.</p>
+              <button class="btn btn-primary btn-lg px-4">Get Started</button>
+          </div>
+      </div>
+  </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5 bg-light">
+  <div class="container">
+      <div class="text-center mb-5">
+          <h2 class="display-5 fw-bold">Everything you need to win</h2>
+          <p class="lead text-muted">Powerful tools to help you make the best decisions</p>
+      </div>
+
+      <div class="row g-4">
+          <!-- Feature 1 -->
+          <div class="col-md-4">
+              <div class="card h-100 border-0 shadow-sm">
+                  <div class="card-body">
+                      <div class="feature-icon bg-primary d-flex align-items-center justify-content-center mb-3">
+                          <svg class="text-white" width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                          </svg>
+                      </div>
+                      <h3 class="h5 card-title">Real-time Updates</h3>
+                      <p class="card-text">Get instant notifications for trades, injuries, and player updates from your Sleeper leagues.</p>
+                  </div>
+              </div>
+          </div>
+
+          <!-- Feature 2 -->
+          <div class="col-md-4">
+              <div class="card h-100 border-0 shadow-sm">
+                  <div class="card-body">
+                      <div class="feature-icon bg-primary d-flex align-items-center justify-content-center mb-3">
+                          <svg class="text-white" width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                          </svg>
+                      </div>
+                      <h3 class="h5 card-title">Advanced Analytics</h3>
+                      <p class="card-text">Deep statistical analysis and performance predictions to help you make informed decisions.</p>
+                  </div>
+              </div>
+          </div>
+
+          <!-- Feature 3 -->
+          <div class="col-md-4">
+              <div class="card h-100 border-0 shadow-sm">
+                  <div class="card-body">
+                      <div class="feature-icon bg-primary d-flex align-items-center justify-content-center mb-3">
+                          <svg class="text-white" width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                          </svg>
+                      </div>
+                      <h3 class="h5 card-title">Trade Analyzer</h3>
+                      <p class="card-text">Evaluate trades with our advanced analysis tool to ensure you're making the best moves.</p>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+</section>
+
+<!-- CTA Section -->
+<section class="bg-primary text-white py-5">
+  <div class="container text-center">
+      <h2 class="display-6 fw-bold mb-4">Ready to dominate your league?</h2>
+      <p class="lead mb-4">Join thousands of players who are already using Fantasy Hoops Hub to win their leagues.</p>
+      <button class="btn btn-light btn-lg px-4">Sign up for free</button>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="bg-dark text-light py-4">
+  <div class="container">
+      <div class="row align-items-center">
+          <div class="col-md-6">
+              <p class="mb-0">&copy; 2024 Fantasy Hoops Hub. All rights reserved.</p>
+          </div>
+          <div class="col-md-6 text-md-end">
+              <a href="#" class="text-light text-decoration-none me-3">Terms</a>
+              <a href="#" class="text-light text-decoration-none me-3">Privacy</a>
+              <a href="#" class="text-light text-decoration-none">Contact</a>
+          </div>
+      </div>
+  </div>
+</footer>
+
+<!-- Bootstrap JS and Popper.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.8/umd/popper.min.js"></script>
+{% comment %} <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.min.js"></script> {% endcomment %}
+{% endblock %}
