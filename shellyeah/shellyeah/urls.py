@@ -21,5 +21,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('lottery_sim/', include('lottery_sim.urls') ),
     path('contact/', include('contact.urls') ),
+    path('players/', include('players.urls') ),
     path('',include('homepage.urls')),
 ]
