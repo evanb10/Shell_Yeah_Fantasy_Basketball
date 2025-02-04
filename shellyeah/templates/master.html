@@ -8,7 +8,7 @@
   {% block custom_css %}{% endblock %}
   {% block custom_script %}{% endblock %}
 </head>
-<body style="{% block body_style %}{% endblock %}">
+<body style="{% block body_style %}{% endblock %}" class="{% block body_class %}{% endblock %}">
     <div id="navbar">
         {% include "navbar.html" %}
     </div>

@@ -1,4 +1,16 @@
 [X] *.. Create projects homepage that will link to all projects
+[ ] *** Improve lottery sim process
+        - Rather than asking for league ID, ask for the username of that user
+        - Take that username and hit Sleeper API "GET https://api.sleeper.app/v1/user/<username>"
+        - Get the user ID and hit Sleeper API "GET https://api.sleeper.app/v1/user/<user_id>/leagues/<sport>/<season>"
+                = Set current season as global variable.  It's 2025, but we need to poll 2024
+        - Create list of leagues that user is in for the specified year.
+                = League name
+                = Number of users
+                = League avatar
+                = League ID (no need to display this to the user though)
+        - Let user select what league they would like to work with
+        - Take the league ID and plug into current setup
 [ ] *** Create lottery sim page.
         X Take in league number
         X Create webpage to select/modify default lottery odds
@@ -16,13 +28,13 @@
         - Update so when user inputs league_id, the league info is updated from Sleeper's API. 
         - Assosiate team name with display name incase no team_name was set. 
                 - Ex. youwaremetobed is the display_name but a team name was not set so None was displaying on website. 
-[ ] **. Create hashing algorithm for the combinations.  
+[ ] *.. Create hashing algorithm for the combinations.  
         - Currently, lottery sim is O(n^2) since we loop through teams and use 'in'
         - Hash will allow for O(1)
 [X] *** Create a players page which will list a players in nba
         X Create players model for DB
         - Create a scheduled task to pull from API to update once a week
-[ ] *** Create new template for the following:
+[ ] **. Create new template for the following:
         - League info
         - Trade tracker
         - My team info (i.e record, points scored, best lineup)

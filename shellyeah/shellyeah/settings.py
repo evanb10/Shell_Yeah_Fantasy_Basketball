@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'lottery_sim',
     'players',
     'contact',
+    'homepage',
     'bootstrap5'
 ]
 
