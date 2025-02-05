@@ -1,7 +1,7 @@
 from django import forms
 
 class UserNameForm(forms.Form):
-   user_name = forms.CharField(required = True, label="User Name", widget=forms.TextInput(
+   user_name = forms.CharField(required = True, label="Please Enter Your Sleeper User Name", widget=forms.TextInput(
        attrs = {
            'class':'form-control',
            'type':'text',

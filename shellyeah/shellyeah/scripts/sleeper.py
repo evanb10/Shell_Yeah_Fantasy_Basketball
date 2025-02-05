@@ -211,6 +211,23 @@ def clear_players_table(self):
     self.db_cursor.execute('delete from players_player')
     self.connection.commit()
 
+def user_to_leagues(user_name):
+    
+    leagues = []
+
+    response_user_name = requests.get('https://api.sleeper.app/v1/user/{}'.format(user_name))
+
+    if response_user_name.status_code == 200:
+        json_response_user = response_user_name.json()
+
+    user_id = json_response_user['user_id']
+
+    response_leagues = requests.get('https://api.sleeper.app/v1/user/{}/leagues/nba/{}'.format(user_id,str(2024)))
+    for league in response_leagues.json():
+        temp = {'avatar':league['avatar'], 'league_id':league['league_id'], 'previous_league_id':league['previous_league_id'], 'name':league['name'],}
+        leagues.append(temp)
+    # print(response_leagues.json())
+    return leagues
 
 def update_managers(league_id):
     # Replace <league_id> with the ID of your Sleeper league
@@ -219,12 +236,14 @@ def update_managers(league_id):
     response_users = requests.get('https://api.sleeper.app/v1/league/{}/users'.format(league_id))
     response_rosters = requests.get('https://api.sleeper.app/v1/league/{}/rosters'.format(league_id))
 
-    rosters_dict = {roster['owner_id'] : roster for roster in response_rosters.json()}
     
 
     # Check if the API call was successful
     if response_users.status_code == 200:
         if response_rosters.status_code == 200:
+
+            rosters_dict = {roster['owner_id'] : roster for roster in response_rosters.json()}
+
             # The API call was successful
             # Get the JSON response
             json_response_users = response_users.json()

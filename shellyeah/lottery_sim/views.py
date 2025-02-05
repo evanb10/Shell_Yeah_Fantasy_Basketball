@@ -29,19 +29,21 @@ def get_user_name(request):
 
         # check whether it's valid:
         if id_form.is_valid():
-            # Get league id
-            league_id = request.POST['league_id']
+            # Get user_name
+            user_name = request.POST['user_name']
             
             # Update league 
             # sleeper.get_league_api(league_id)
-            #Update managers
-            sleeper.update_managers(league_id)
+            #Update managers        
+            user_leagues_list = sleeper.user_to_leagues(user_name)
+            # sleeper.update_managers(league_id)
             # sleeper.clear_managers_table()
             # sleeper.save_managers_to_database()
 
             #Update rosters
             # sleeper.get_rosters()
-            return redirect(reverse('get_odds', kwargs={'league_id': league_id}))
+            return redirect(reverse('user_leagues', kwargs={'user_name': user_name}))
+            # return redirect(reverse('get_odds', kwargs={'league_id': league_id}))
 
             # Pull all information about a league given the provided league ID
 
@@ -50,6 +52,9 @@ def get_user_name(request):
         form = user_name_form.UserNameForm()
         context['form'] = form
     return render(request, 'league_id_form.html',context)
+
+def user_leagues(request, user_name):
+    return render(request, 'user_leagues.html', {})
 
 def get_odds(request,league_id):
     context = {}
