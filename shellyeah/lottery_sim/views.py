@@ -6,7 +6,7 @@ from django.urls import reverse
 from lottery_sim.models import League
 
 # from .models import Player#, Roster, Manager, League, LeagueMembership
-from .forms import league_id_form, odds_form
+from .forms import user_name_form, odds_form
 from .scripts.lottery import League as script_league, Team as script_team
 from .scripts.sleeper import League as sleeper_league
 
@@ -20,12 +20,12 @@ import shellyeah.scripts.sleeper as sleeper
 
 # Create your views here.
 
-def league_id(request):
+def get_user_name(request):
     context = {}
     # if this is a POST request we need to process the form data
     if request.method == "POST":
         # create a form instance and populate it with data from the request:
-        id_form = league_id_form.LeagueForm(request.POST)
+        id_form = user_name_form.UserNameForm(request.POST)
 
         # check whether it's valid:
         if id_form.is_valid():
@@ -47,7 +47,7 @@ def league_id(request):
 
     # if a GET (or any other method) we'll create a blank form
     else:
-        form = league_id_form.LeagueForm()
+        form = user_name_form.UserNameForm()
         context['form'] = form
     return render(request, 'league_id_form.html',context)
 

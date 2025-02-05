@@ -5,10 +5,12 @@
 
 {% block content %}
 
+<div class='container-fluid mx-auto w-25 mt-5'>
 <form action="" method="post">
     {% csrf_token %}
     {{ form }}
-    <input type="submit" value="Submit">
+    <input type="submit" value="Submit" class='mt-2'>
 </form>
+</div>
 
 {% endblock %}
