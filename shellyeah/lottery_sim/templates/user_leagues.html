@@ -5,13 +5,25 @@
 
 {% block content %}
 
-<div class='container-fluid mx-auto w-25 mt-5'>
-    <p> This is a test </p>
-{% comment %} <form action="" method="post">
-    {% csrf_token %}
-    {{ form }}
-    <input type="submit" value="Submit" class='mt-2'>
-</form> {% endcomment %}
+<div class='container-fluid mx-auto w-50 mt-5'>
+    <h1>Select a League</h1>
+    <form method="POST" >
+        {% csrf_token %}
+        <ul>
+            {% for league in leagues %}
+            <li>
+                <!-- The radio button's value can be the league_id or any unique identifier -->
+                <input type="radio" name="selected_league" id="league_{{ league.league_id }}" value="{{ league.league_id }}" required>
+                <label for="league_{{ league.league_id }}">
+                    <!-- If you have a URL for the avatar, adjust accordingly -->
+                    <img src="data:image/png;base64,{{ league.avatar }}" alt="{{ league.name }} avatar" width="50" height="50">
+                    {{ league.name }}
+                </label>
+            </li>
+            {% endfor %}
+        </ul>
+        <button type="submit">Submit</button>
+    </form>
 </div>
 
 {% endblock %}

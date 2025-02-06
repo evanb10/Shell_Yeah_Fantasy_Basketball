@@ -224,7 +224,10 @@ def user_to_leagues(user_name):
 
     response_leagues = requests.get('https://api.sleeper.app/v1/user/{}/leagues/nba/{}'.format(user_id,str(2024)))
     for league in response_leagues.json():
-        temp = {'avatar':league['avatar'], 'league_id':league['league_id'], 'previous_league_id':league['previous_league_id'], 'name':league['name'],}
+        import base64
+        avatar = base64.b64encode(requests.get('https://sleepercdn.com/avatars/thumbs/{}'.format(league['avatar'])).content).decode('utf-8')
+        print(avatar)
+        temp = {'avatar':avatar, 'league_id':league['league_id'], 'previous_league_id':league['previous_league_id'], 'name':league['name'],}
         leagues.append(temp)
     # print(response_leagues.json())
     return leagues
