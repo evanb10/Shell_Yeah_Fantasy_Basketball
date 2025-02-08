@@ -31,6 +31,7 @@ This project aims to **fill in the gaps** by providing additional tools to assis
 
 
 https://github.com/user-attachments/assets/1fff1a22-d43b-4bb9-bc9b-7d181d68f61f
+![ShellYeahDemo-ezgif com-speed](https://github.com/user-attachments/assets/c83270dc-c974-4790-ba31-96b53c56790e)
 
 
 ## Tech Stack  
