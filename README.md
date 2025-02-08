@@ -29,6 +29,10 @@ This project aims to **fill in the gaps** by providing additional tools to assis
 5. **Run the Lottery Simulation**  
    - Click **"Submit"** to simulate the draft lottery and determine the draft order for bottom teams.  
 
+
+https://github.com/user-attachments/assets/1fff1a22-d43b-4bb9-bc9b-7d181d68f61f
+
+
 ## Tech Stack  
 - **Django 4.2.13** (Web Framework)  
 - **Python 3.10.12**  
