@@ -13,6 +13,8 @@
                 const key = Object.keys(percentages)[index];
                 const value = percentages[key];
                 const listItem = document.createElement("li");
+                listItem.className = ' list-group-item rounded-pill text-center mx-auto m-2';
+                listItem.style.width = '200px';
                 listItem.textContent = `${key}: ${value}`;
                 const list = document.getElementById("percentages-list");
                 list.insertBefore(listItem, list.firstChild);
@@ -26,8 +28,14 @@
 </script>
 {% endblock %}
 {% block content %}
-<h1>Percentages</h1>
-    <ul id="percentages-list">
-        <!-- List items will be added here by JavaScript -->
-    </ul>
+<div class='container' style='background:blue'>
+    <div class="row text-center mx-auto">
+        <h1>Percentages</h1>
+    </div>
+    <div class="row text-center mx-auto" style='background:orange'>
+        <ul id="percentages-list" class="list-group" style='background:red'>
+            <!-- List items will be added here by JavaScript -->
+        </ul>
+    </div>
+</div>
 {% endblock %}
