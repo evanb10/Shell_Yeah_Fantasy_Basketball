@@ -57,6 +57,7 @@ class League:
         for team in self.teams:
             team.combinations = tempCombs[:int(team.odds*10)]
             tempCombs = list(set(tempCombs)-set(team.combinations))
+            print(f'{team.name} : {team.odds} : {len(team.combinations)}')
 
     def oddsCheck(self):
         ''' Ensure that team odds all add up to 100 '''
@@ -83,20 +84,23 @@ class League:
         return sorted(self.teams, key=lambda x: x.rank)
 
     def generateWinningCombo(self):
-        print(self.combinations)
+        # print(self.combinations)
         return random.choice(self.combinations)
 
     def findWinningTeam(self):
         for idx in range(3):
             if idx < 3 and len(self.combinations)>0:
                 winningCombo = self.generateWinningCombo()
+                
                 for team in self.teams:
+                    # print(team)
+                    # continue
                     if winningCombo in team.combinations:
                         print(f'The number {idx+1} overall pick in the 2022 Fantasy Draft goes to...')
                         print(f'THE {team.rank} SEED TEAM! CONGRATS {team.name}!')
-                        print(len(self.combinations))
+                        # print(len(self.combinations))
                         self.combinations = list(set(self.combinations)-set(team.combinations))
-                        print(len(self.combinations))
+                        # print(len(self.combinations))
 
                         team.selected = True
                         self.lottery_results[idx+1] = team.name

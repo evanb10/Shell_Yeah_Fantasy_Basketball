@@ -6,7 +6,7 @@ from django.template.loader import render_to_string
 # Create your views here.
 
 def contact(request):
-    print(request.method)
+    # print(request.method)
     if request.method == 'POST':
         form = contact_form.ContactForm(request.POST)
 

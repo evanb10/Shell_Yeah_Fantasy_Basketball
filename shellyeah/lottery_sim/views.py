@@ -33,12 +33,6 @@ def get_user_name(request):
             # Get user_name
             user_name = request.POST['user_name']
             
-            # Update league 
-            # sleeper.get_league_api(league_id)
-            #Update managers        
-            # sleeper.update_managers(league_id)
-            # sleeper.clear_managers_table()
-            # sleeper.save_managers_to_database()
 
             #Update rosters
             # sleeper.get_rosters()
@@ -55,8 +49,8 @@ def get_user_name(request):
 
 def user_leagues(request, user_name):
     user_leagues_list = sleeper.user_to_leagues(user_name)
-    print(user_leagues_list)
-    print(user_name)
+    # print(user_leagues_list)
+    # print(user_name)
     choices = []
     for league in user_leagues_list:
         # Create HTML for the label.
@@ -73,10 +67,16 @@ def user_leagues(request, user_name):
         form = league_selection_form.LeagueSelectionForm(request.POST) 
         form.fields['selected_league'].choices = choices
         if form.is_valid():
-            selected_league = form.cleaned_data['selected_league']
-            print(selected_league)
+            selected_league_id = form.cleaned_data['selected_league']
+            # print(selected_league)
+            # Update league 
+            sleeper.get_league_api(selected_league_id)
+            #Update managers        
+            # sleeper.update_managers(league_id)
+            # sleeper.clear_managers_table()
+            # sleeper.save_managers_to_database()
             # Process the selected league (e.g., redirect to a detail page)
-            return redirect('get_odds', league_id=selected_league)
+            return redirect('get_odds', league_id=selected_league_id)
     else:
         form = league_selection_form.LeagueSelectionForm()
         form.fields['selected_league'].choices = choices
@@ -107,8 +107,8 @@ def get_odds(request,league_id):
         prev_league = league_query['previous_league_id']
         prev_records = sleeper.get_prev_league_api(prev_league)
 
-        print(league_id)
-        print(prev_league)
+        # print(league_id)
+        # print(prev_league)
 
 
         # teams = Manager.objects.filter(league_id=league_id)
@@ -198,7 +198,7 @@ def lottery_results(request, league_id):
             # teams_dict = json.loads(teams_str)
 
             league = League()
-            print(teams)
+            # print(teams)
             for manager in teams:
                 manager_name = manager['name']
                 odds = manager['odds']  # Ensure odds is a float
